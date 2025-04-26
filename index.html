@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melcom Retail System - Where Ghana Shops</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Using the provided chart.min.js; alternatively, you can use a CDN: <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <script src="js/chart.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="images/logo.png" alt="Melcom Logo">
+            </div>
+            <nav>
+                <a href="#" class="nav-link active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="#" class="nav-link" data-section="ProductCategory"><i class="fas fa-tags"></i> Categories</a>
+                <a href="#" class="nav-link" data-section="Supplier"><i class="fas fa-truck"></i> Suppliers</a>
+                <a href="#" class="nav-link" data-section="Customer"><i class="fas fa-users"></i> Customers</a>
+                <a href="#" class="nav-link" data-section="Branch"><i class="fas fa-store"></i> Branches</a>
+                <a href="#" class="nav-link" data-section="Product"><i class="fas fa-box"></i> Products</a>
+                <a href="#" class="nav-link" data-section="Employee"><i class="fas fa-user-tie"></i> Employees</a>
+                <a href="#" class="nav-link" data-section="Department"><i class="fas fa-building"></i> Departments</a>
+                <a href="#" class="nav-link" data-section="Inventory"><i class="fas fa-warehouse"></i> Inventory</a>
+                <a href="#" class="nav-link" data-section="Payroll"><i class="fas fa-money-check"></i> Payroll</a>
+                <a href="#" class="nav-link" data-section="Order"><i class="fas fa-shopping-cart"></i> Orders</a>
+                <a href="#" class="nav-link" data-section="Transaction"><i class="fas fa-exchange-alt"></i> Transactions</a>
+                <a href="#" class="nav-link" data-section="reports"><i class="fas fa-chart-bar"></i> Reports</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Toast Notification -->
+            <div id="toast" class="toast"></div>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section">
+                <h1>Dashboard</h1>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <h2>Total Sales</h2>
+                        <p id="total-sales">GHS 0.00</p>
+                    </div>
+                    <div class="metric-box">
+                        <h2>Total Products</h2>
+                        <p id="total-products">0</p>
+                    </div>
+                    <div class="metric-box">
+                        <h2>Total Transactions</h2>
+                        <p id="total-transactions">0</p>
+                    </div>
+                    <div class="metric-box">
+                        <h2>Total Employees</h2>
+                        <p id="total-employees">0</p>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h2>Sales per Product</h2>
+                    <canvas id="sales-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- Entity Sections -->
+            <section id="ProductCategory" class="content-section hidden">
+                <h1>Categories</h1>
+                <div class="section-header">
+                    <input type="text" id="ProductCategory-search" placeholder="Search categories...">
+                    <button class="btn btn-primary" onclick="openModal('ProductCategory-modal', 'Add Category')">Add Category</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ProductCategory-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Supplier" class="content-section hidden">
+                <h1>Suppliers</h1>
+                <div class="section-header">
+                    <input type="text" id="Supplier-search" placeholder="Search suppliers...">
+                    <button class="btn btn-primary" onclick="openModal('Supplier-modal', 'Add Supplier')">Add Supplier</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Contact Details</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Supplier-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Customer" class="content-section hidden">
+                <h1>Customers</h1>
+                <div class="section-header">
+                    <input type="text" id="Customer-search" placeholder="Search customers...">
+                    <button class="btn btn-primary" onclick="openModal('Customer-modal', 'Add Customer')">Add Customer</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Loyalty Points</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Total Spent (GHS)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Customer-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Branch" class="content-section hidden">
+                <h1>Branches</h1>
+                <div class="section-header">
+                    <input type="text" id="Branch-search" placeholder="Search branches...">
+                    <button class="btn btn-primary" onclick="openModal('Branch-modal', 'Add Branch')">Add Branch</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Location</th>
+                            <th>Manager</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Branch-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Product" class="content-section hidden">
+                <h1>Products</h1>
+                <div class="section-header">
+                    <input type="text" id="Product-search" placeholder="Search products...">
+                    <button class="btn btn-primary" onclick="openModal('Product-modal', 'Add Product')">Add Product</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price (GHS)</th>
+                            <th>Stock</th>
+                            <th>Supplier</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Product-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Employee" class="content-section hidden">
+                <h1>Employees</h1>
+                <div class="section-header">
+                    <input type="text" id="Employee-search" placeholder="Search employees...">
+                    <button class="btn btn-primary" onclick="openModal('Employee-modal', 'Add Employee')">Add Employee</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Phone</th>
+                            <th>Branch</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Employee-table">
+                        <!-- Employee data will be loaded here -->
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="Department" class="content-section hidden">
+                <h1>Departments</h1>
+                <div class="section-header">
+                    <input type="text" id="Department-search" placeholder="Search departments...">
+                    <button class="btn btn-primary" onclick="openModal('Department-modal', 'Add Department')">Add Department</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Department-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Inventory" class="content-section hidden">
+                <h1>Inventory</h1>
+                <div class="section-header">
+                    <input type="text" id="Inventory-search" placeholder="Search inventory...">
+                    <button class="btn btn-primary" onclick="openModal('Inventory-modal', 'Add Inventory')">Add Inventory</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Inventory-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Payroll" class="content-section hidden">
+                <h1>Payroll</h1>
+                <div class="section-header">
+                    <input type="text" id="Payroll-search" placeholder="Search payroll...">
+                    <button class="btn btn-primary" onclick="openModal('Payroll-modal', 'Add Payroll')">Add Payroll</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Salary (GHS)</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Payroll-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Order" class="content-section hidden">
+                <h1>Orders</h1>
+                <div class="section-header">
+                    <input type="text" id="Order-search" placeholder="Search orders...">
+                    <button class="btn btn-primary" onclick="openModal('Order-modal', 'Add Order')">Add Order</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Employee</th>
+                            <th>Order Date</th>
+                            <th>Delivery Date</th>
+                            <th>Status</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Order-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Transaction" class="content-section hidden">
+                <h1>Transactions</h1>
+                <div class="section-header">
+                    <input type="text" id="Transaction-search" placeholder="Search transactions...">
+                    <button class="btn btn-primary" onclick="openModal('Transaction-modal', 'Add Transaction')">Add Transaction</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Order</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Payment Type</th>
+                            <th>Amount (GHS)</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Transaction-table"></tbody>
+                </table>
+            </section>
+
+            <!-- Modals for Each Entity -->
+            <div id="ProductCategory-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="ProductCategory-modal-title">Add Category</h2>
+                    <div id="ProductCategory-form">
+                        <input type="hidden" id="ProductCategory-id">
+                        <div class="form-group">
+                            <label for="ProductCategory-name">Category Name</label>
+                            <input type="text" id="ProductCategory-name" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('ProductCategory-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('ProductCategory')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Supplier-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Supplier-modal-title">Add Supplier</h2>
+                    <div id="Supplier-form">
+                        <input type="hidden" id="Supplier-id">
+                        <div class="form-group">
+                            <label for="Supplier-name">Supplier Name</label>
+                            <input type="text" id="Supplier-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Supplier-contact">Contact Details</label>
+                            <input type="text" id="Supplier-contact">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Supplier-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('Supplier')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Customer-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Customer-modal-title">Add Customer</h2>
+                    <form id="Customer-form">
+                        <input type="hidden" id="Customer-id">
+                        <div class="form-group">
+                            <label for="Customer-name">Name</label>
+                            <input type="text" id="Customer-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Customer-phone">Phone</label>
+                            <input type="text" id="Customer-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="Customer-email">Email</label>
+                            <input type="email" id="Customer-email">
+                        </div>
+                        <div class="form-group">
+                            <label for="Customer-address">Address</label>
+                            <input type="text" id="Customer-address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Customer-loyalty">Loyalty Points</label>
+                            <input type="number" id="Customer-loyalty" value="0" min="0">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Customer-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="Branch-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Branch-modal-title">Add Branch</h2>
+                    <div id="Branch-form">
+                        <input type="hidden" id="Branch-id">
+                        <div class="form-group">
+                            <label for="Branch-location">Location</label>
+                            <input type="text" id="Branch-location" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Branch-manager">Manager</label>
+                            <select id="Branch-manager"></select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Branch-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('Branch')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Product-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Product-modal-title">Add Product</h2>
+                    <div id="Product-form">
+                        <input type="hidden" id="Product-id">
+                        <div class="form-group">
+                            <label for="Product-name">Product Name</label>
+                            <input type="text" id="Product-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Product-category">Category</label>
+                            <select id="Product-category" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Product-price">Price (GHS)</label>
+                            <input type="number" step="0.01" id="Product-price" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="Product-stock">Quantity in Stock</label>
+                            <input type="number" id="Product-stock" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="Product-supplier">Supplier</label>
+                            <select id="Product-supplier" required></select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Product-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('Product')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Employee-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Employee-modal-title">Add Employee</h2>
+                    <div id="Employee-form">
+                        <input type="hidden" id="Employee-id">
+                        <div class="form-group">
+                            <label for="Employee-name">Name</label>
+                            <input type="text" id="Employee-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Employee-position">Position</label>
+                            <input type="text" id="Employee-position" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Employee-phone">Phone Number</label>
+                            <input type="text" id="Employee-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="Employee-branch">Branch</label>
+                            <select id="Employee-branch"></select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Employee-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEmployee()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Department-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Department-modal-title">Add Department</h2>
+                    <form id="Department-form">
+                        <input type="hidden" id="Department-id">
+                        <div class="form-group">
+                            <label for="Department-name">Name</label>
+                            <input type="text" id="Department-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Department-description">Description</label>
+                            <textarea id="Department-description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="Department-branch">Branch</label>
+                            <select id="Department-branch" required>
+                                <option value="">Select Branch</option>
+                            </select>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Department-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="Inventory-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Inventory-modal-title">Add Inventory</h2>
+                    <form id="Inventory-form">
+                        <input type="hidden" id="Inventory-id">
+                        <div class="form-group">
+                            <label for="Inventory-product">Product</label>
+                            <select id="Inventory-product" required>
+                                <option value="">Select Product</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Inventory-quantity">Quantity</label>
+                            <input type="number" id="Inventory-quantity" required min="0">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Inventory-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="Payroll-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Payroll-modal-title">Add Payroll</h2>
+                    <div id="Payroll-form">
+                        <input type="hidden" id="Payroll-id">
+                        <div class="form-group">
+                            <label for="Payroll-employee">Employee</label>
+                            <select id="Payroll-employee" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Payroll-salary">Salary (GHS)</label>
+                            <input type="number" step="0.01" id="Payroll-salary" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="Payroll-startDate">Start Date</label>
+                            <input type="date" id="Payroll-startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Payroll-endDate">End Date</label>
+                            <input type="date" id="Payroll-endDate">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Payroll-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('Payroll')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Order-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Order-modal-title">Add Order</h2>
+                    <div id="Order-form">
+                        <input type="hidden" id="Order-id">
+                        <div class="form-group">
+                            <label for="Order-customer">Customer</label>
+                            <select id="Order-customer"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-employee">Employee</label>
+                            <select id="Order-employee"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-orderDate">Order Date</label>
+                            <input type="date" id="Order-orderDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-deliveryDate">Delivery Date</label>
+                            <input type="date" id="Order-deliveryDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-status">Status</label>
+                            <select id="Order-status" required>
+                                <option value="Pending">Pending</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-product">Product</label>
+                            <select id="Order-product" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-quantity">Quantity</label>
+                            <input type="number" id="Order-quantity" required min="1">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Order-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveOrder()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Transaction-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Transaction-modal-title">Add Transaction</h2>
+                    <div id="Transaction-form">
+                        <input type="hidden" id="Transaction-id">
+                        <div class="form-group">
+                            <label for="Transaction-order">Order</label>
+                            <select id="Transaction-order" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Transaction-customer">Customer</label>
+                            <select id="Transaction-customer" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Transaction-paymentType">Payment Type</label>
+                            <select id="Transaction-paymentType" required>
+                                <option value="Cash">Cash</option>
+                                <option value="Credit">Credit</option>
+                                <option value="Debit">Debit</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Transaction-totalAmount">Total Amount (GHS)</label>
+                            <input type="number" step="0.01" id="Transaction-totalAmount" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="Transaction-date">Date</label>
+                            <input type="date" id="Transaction-date" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Transaction-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveTransaction()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section hidden">
+                <h1>Reports</h1>
+                <div class="section-header">
+                    <select id="report-type">
+                        <option value="total-revenue-per-customer">Total Revenue per Customer</option>
+                        <option value="low-stock-products">Products with Low Stock</option>
+                        <option value="employees-with-branch-department">Employees with Branch and Department</option>
+                        <option value="orders-with-product-details">Orders with Product Details</option>
+                        <option value="total-quantity-per-category">Total Quantity Ordered per Category</option>
+                        <option value="employees-no-payroll">Employees with No Payroll</option>
+                        <option value="high-spending-customers">High-Spending Customers</option>
+                    </select>
+                    <button id="generate-report-btn" class="btn btn-primary">Generate Report</button>
+                </div>
+                <table id="report-table" class="data-table hidden">
+                    <thead id="report-table-head"></thead>
+                    <tbody id="report-table-body"></tbody>
+                </table>
+                <div id="report-chart-container" class="chart-box hidden">
+                    <canvas id="report-chart"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Base URL for API endpoints
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        // Generic function to fetch entities
+        async function fetchEntity(entityType) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching ${entityType}:`, error);
+                showToast(`Error loading ${entityType}: ${error.message}`, 'error');
+                return [];
+            }
+        }
+
+        // Generic function to add an entity
+        async function addEntity(entityType, data) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(`Error adding ${entityType}:`, error);
+                throw error;
+            }
+        }
+
+        // Generic function to update an entity
+        async function updateEntity(entityType, id, data) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(`Error updating ${entityType}:`, error);
+                throw error;
+            }
+        }
+
+        // Generic function to delete an entity
+        async function deleteEntity(entityType, id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(`Error deleting ${entityType}:`, error);
+                throw error;
+            }
+        }
+
+        // Function to show toast notifications
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Function to open modal
+        function openModal(modalId, title) {
+            const modal = document.getElementById(modalId);
+            const modalTitle = document.getElementById(`${modalId}-title`);
+            modalTitle.textContent = title;
+            modal.classList.remove('hidden');
+
+            // Load branches when opening employee modal
+            if (modalId === 'Employee-modal') {
+                loadBranches();
+            }
+            // Load products when opening inventory modal
+            if (modalId === 'Inventory-modal') {
+                loadProductsForInventory();
+            }
+            // Load branches when opening department modal
+            if (modalId === 'Department-modal') {
+                loadBranchesForDepartment();
+            }
+            // Load dropdowns when opening order modal
+            if (modalId === 'Order-modal') {
+                loadCustomersForOrder();
+                loadEmployeesForOrder();
+                loadProductsForOrder();
+            }
+            // Load employees when opening payroll modal
+            if (modalId === 'Payroll-modal') {
+                loadEmployeesForPayroll();
+            }
+        }
+
+        // Function to close modal
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('hidden');
+            // Clear form fields
+            const form = document.getElementById(`${modalId}-form`);
+            if (form) {
+                const inputs = form.getElementsByTagName('input');
+                for (let input of inputs) {
+                    if (input.type !== 'button') {
+                        input.value = '';
+                    }
+                }
+            }
+        }
+
+        // Function to load products for inventory dropdown
+        async function loadProductsForInventory() {
+            try {
+                const products = await fetchEntity('product');
+                const productSelect = document.getElementById('Inventory-product');
+                productSelect.innerHTML = '<option value="">Select Product</option>';
+
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.ProductID;
+                    option.textContent = product.ProductName;
+                    productSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showToast('Error loading products', 'error');
+            }
+        }
+
+        // Function to load dashboard data
+        async function loadDashboardData() {
+            try {
+                // Load total sales from transactions
+                const transactions = await fetchEntity('transaction');
+                const totalSales = transactions.reduce((sum, t) => sum + parseFloat(t.TotalAmount), 0);
+                document.getElementById('total-sales').textContent = `GHS ${totalSales.toFixed(2)}`;
+
+                // Load total products
+                const products = await fetchEntity('product');
+                document.getElementById('total-products').textContent = products.length;
+
+                // Load total transactions
+                document.getElementById('total-transactions').textContent = transactions.length;
+
+                // Load total employees
+                const employees = await fetchEntity('employee');
+                document.getElementById('total-employees').textContent = employees.length;
+
+                // Load sales chart data
+                const salesData = {};
+                transactions.forEach(transaction => {
+                    if (transaction.ProductName) {
+                        if (!salesData[transaction.ProductName]) {
+                            salesData[transaction.ProductName] = 0;
+                        }
+                        salesData[transaction.ProductName] += parseFloat(transaction.TotalAmount);
+                    }
+                });
+
+                const ctx = document.getElementById('sales-chart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(salesData),
+                        datasets: [{
+                            label: 'Sales per Product',
+                            data: Object.values(salesData),
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                // Only log the error to console for debugging
+                console.error('Error loading dashboard data:', error);
+
+                // Only show error toast if we have no data at all
+                if (!document.getElementById('total-sales').textContent.includes('GHS')) {
+                    showToast('Error loading dashboard data', 'error');
+                }
+            }
+        }
+
+        // Function to load customers
+        async function loadCustomers() {
+            try {
+                const customers = await fetchEntity('customer');
+                const customerTable = document.getElementById('Customer-table');
+                customerTable.innerHTML = '';
+
+                customers.forEach(customer => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${customer.CustomerID}</td>
+                        <td>${customer.Name}</td>
+                        <td>${customer.LoyaltyPoints || 0}</td>
+                        <td>${customer.Address || ''}</td>
+                        <td>${customer.PhoneNumber || ''}</td>
+                        <td>${customer.Email || ''}</td>
+                        <td>GHS ${parseFloat(customer.TotalSpent || 0).toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editCustomer(${customer.CustomerID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteCustomer(${customer.CustomerID})">Delete</button>
+                        </td>
+                    `;
+                    customerTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading customers:', error);
+                showToast('Error loading customers', 'error');
+            }
+        }
+
+        // Function to save customer
+        async function saveCustomer() {
+            try {
+                const customerId = document.getElementById('Customer-id').value;
+                const customerData = {
+                    Name: document.getElementById('Customer-name').value,
+                    Address: document.getElementById('Customer-address').value,
+                    Phone: document.getElementById('Customer-phone').value,
+                    Email: document.getElementById('Customer-email').value,
+                    LoyaltyPoints: document.getElementById('Customer-loyalty').value || 0
+                };
+
+                if (!customerData.Name) {
+                    showToast('Customer name is required', 'error');
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/customer${customerId ? `/${customerId}` : ''}`, {
+                    method: customerId ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(customerData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save customer');
+                }
+
+                showToast(`Customer ${customerId ? 'updated' : 'added'} successfully`, 'success');
+                closeModal('Customer-modal');
+                loadCustomers();
+            } catch (error) {
+                console.error('Error saving customer:', error);
+                showToast('Error saving customer', 'error');
+            }
+        }
+
+        // Function to edit customer
+        async function editCustomer(customerId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/customer/${customerId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch customer data');
+                }
+                const customer = await response.json();
+
+                document.getElementById('Customer-id').value = customer.CustomerID;
+                document.getElementById('Customer-name').value = customer.Name;
+                document.getElementById('Customer-address').value = customer.Address || '';
+                document.getElementById('Customer-phone').value = customer.PhoneNumber || '';
+                document.getElementById('Customer-email').value = customer.Email || '';
+
+                openModal('Customer-modal');
+            } catch (error) {
+                console.error('Error editing customer:', error);
+                showToast('Error loading customer data', 'error');
+            }
+        }
+
+        // Function to delete customer
+        async function deleteCustomer(customerId) {
+            if (!confirm('Are you sure you want to delete this customer?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/customer/${customerId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete customer');
+                }
+
+                showToast('Customer deleted successfully', 'success');
+                loadCustomers();
+            } catch (error) {
+                console.error('Error deleting customer:', error);
+                showToast('Error deleting customer', 'error');
+            }
+        }
+
+        // Function to load categories
+        async function loadCategories() {
+            try {
+                const categories = await fetchEntity('category');
+                const categoryTable = document.getElementById('ProductCategory-table');
+                categoryTable.innerHTML = '';
+
+                categories.forEach(category => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${category.CategoryID}</td>
+                        <td>${category.CategoryName}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editCategory(${category.CategoryID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteCategory(${category.CategoryID})">Delete</button>
+                        </td>
+                    `;
+                    categoryTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                showToast('Error loading categories', 'error');
+            }
+        }
+
+        // Function to save category
+        async function saveCategory() {
+            const categoryId = document.getElementById('ProductCategory-id').value;
+            const category = {
+                CategoryName: document.getElementById('ProductCategory-name').value
+            };
+
+            try {
+                if (categoryId) {
+                    await updateEntity('category', parseInt(categoryId), category);
+                } else {
+                    await addEntity('category', category);
+                }
+
+                closeModal('ProductCategory-modal');
+                loadCategories();
+                showToast(`Category ${categoryId ? 'updated' : 'added'} successfully`, 'success');
+            } catch (error) {
+                console.error('Error saving category:', error);
+                showToast('Error saving category', 'error');
+            }
+        }
+
+        // Function to edit category
+        async function editCategory(id) {
+            try {
+                const categories = await fetchEntity('category');
+                const category = categories.find(c => c.CategoryID === id);
+
+                if (category) {
+                    document.getElementById('ProductCategory-id').value = category.CategoryID;
+                    document.getElementById('ProductCategory-name').value = category.CategoryName;
+                    openModal('ProductCategory-modal', 'Edit Category');
+                }
+            } catch (error) {
+                console.error('Error loading category:', error);
+                showToast('Error loading category', 'error');
+            }
+        }
+
+        // Function to delete category
+        async function deleteCategory(id) {
+            if (confirm('Are you sure you want to delete this category?')) {
+                try {
+                    await deleteEntity('category', id);
+                    loadCategories();
+                    showToast('Category deleted successfully', 'success');
+                } catch (error) {
+                    console.error('Error deleting category:', error);
+                    showToast('Error deleting category', 'error');
+                }
+            }
+        }
+
+        // Function to load branches into dropdown
+        async function loadBranches() {
+            try {
+                const branchSelect = document.getElementById('Employee-branch');
+                branchSelect.innerHTML = '<option value="">Select Branch</option>';
+
+                // Using static branch data from db.js
+                const branches = [{
+                    BranchID: 1,
+                    Location: "Accra"
+                }, {
+                    BranchID: 2,
+                    Location: "Kumasi"
+                }, {
+                    BranchID: 3,
+                    Location: "Tema"
+                }, {
+                    BranchID: 4,
+                    Location: "Takoradi"
+                }, {
+                    BranchID: 5,
+                    Location: "Cape Coast"
+                }];
+
+                branches.forEach(branch => {
+                    const option = document.createElement('option');
+                    option.value = branch.BranchID;
+                    option.textContent = branch.Location;
+                    branchSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading branches:', error);
+                showToast('Error loading branches', 'error');
+            }
+        }
+
+        // Function to load employees
+        async function loadEmployees() {
+            try {
+                const employees = await fetchEntity('employee');
+                const employeeTable = document.getElementById('Employee-table');
+                employeeTable.innerHTML = '';
+
+                employees.forEach(employee => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${employee.EmployeeID}</td>
+                        <td>${employee.Name}</td>
+                        <td>${employee.Position}</td>
+                        <td>${employee.PhoneNumber || ''}</td>
+                        <td>${employee.BranchName || ''}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editEmployee(${employee.EmployeeID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteEmployee(${employee.EmployeeID})">Delete</button>
+                        </td>
+                    `;
+                    employeeTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading employees:', error);
+                showToast('Error loading employees', 'error');
+            }
+        }
+
+        // Function to save employee
+        async function saveEmployee() {
+            const employeeId = document.getElementById('Employee-id').value;
+            const branchId = document.getElementById('Employee-branch').value;
+
+            if (!branchId) {
+                showToast('Please select a branch', 'error');
+                return;
+            }
+
+            const phoneNumber = document.getElementById('Employee-phone').value;
+            const employee = {
+                Name: document.getElementById('Employee-name').value,
+                Position: document.getElementById('Employee-position').value,
+                PhoneNumber: phoneNumber || null, // Explicitly set to null if empty
+                BranchID: parseInt(branchId)
+            };
+
+            try {
+                if (employeeId) {
+                    await updateEntity('employee', parseInt(employeeId), employee);
+                } else {
+                    await addEntity('employee', employee);
+                }
+
+                closeModal('Employee-modal');
+                loadEmployees();
+                showToast(`Employee ${employeeId ? 'updated' : 'added'} successfully`, 'success');
+            } catch (error) {
+                console.error('Error saving employee:', error);
+                showToast('Error saving employee', 'error');
+            }
+        }
+
+        // Function to edit employee
+        async function editEmployee(id) {
+            try {
+                const employees = await fetchEntity('employee');
+                const employee = employees.find(e => e.EmployeeID === id);
+
+                if (employee) {
+                    document.getElementById('Employee-id').value = employee.EmployeeID;
+                    document.getElementById('Employee-name').value = employee.Name;
+                    document.getElementById('Employee-position').value = employee.Position;
+                    document.getElementById('Employee-phone').value = employee.PhoneNumber || '';
+
+                    // Load branches before setting the selected branch
+                    await loadBranches();
+                    document.getElementById('Employee-branch').value = employee.BranchID || '';
+
+                    openModal('Employee-modal', 'Edit Employee');
+                }
+            } catch (error) {
+                console.error('Error loading employee:', error);
+                showToast('Error loading employee', 'error');
+            }
+        }
+
+        // Function to delete employee
+        async function deleteEmployee(id) {
+            if (confirm('Are you sure you want to delete this employee?')) {
+                try {
+                    await deleteEntity('employee', id);
+                    loadEmployees();
+                    showToast('Employee deleted successfully', 'success');
+                } catch (error) {
+                    console.error('Error deleting employee:', error);
+                    showToast('Error deleting employee', 'error');
+                }
+            }
+        }
+
+        // Function to load products
+        async function loadProducts() {
+            try {
+                const products = await fetchEntity('product');
+                const productTable = document.getElementById('Product-table');
+                productTable.innerHTML = '';
+
+                products.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.ProductID}</td>
+                        <td>${product.ProductName}</td>
+                        <td>${product.CategoryName}</td>
+                        <td>GHS ${parseFloat(product.Price).toFixed(2)}</td>
+                        <td>${product.QuantityInStock}</td>
+                        <td>${product.SupplierName}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editProduct(${product.ProductID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteProduct(${product.ProductID})">Delete</button>
+                        </td>
+                    `;
+                    productTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showToast('Error loading products', 'error');
+            }
+        }
+
+        // Function to save product
+        async function saveProduct() {
+            const productId = document.getElementById('Product-id').value;
+            const product = {
+                ProductName: document.getElementById('Product-name').value,
+                CategoryID: document.getElementById('Product-category').value,
+                Price: document.getElementById('Product-price').value,
+                QuantityInStock: document.getElementById('Product-stock').value,
+                SupplierID: document.getElementById('Product-supplier').value
+            };
+
+            try {
+                if (productId) {
+                    await updateEntity('product', parseInt(productId), product);
+                } else {
+                    await addEntity('product', product);
+                }
+
+                closeModal('Product-modal');
+                loadProducts();
+                showToast(`Product ${productId ? 'updated' : 'added'} successfully`, 'success');
+            } catch (error) {
+                console.error('Error saving product:', error);
+                showToast('Error saving product', 'error');
+            }
+        }
+
+        // Function to edit product
+        async function editProduct(id) {
+            try {
+                const products = await fetchEntity('product');
+                const product = products.find(p => p.ProductID === id);
+
+                if (product) {
+                    document.getElementById('Product-id').value = product.ProductID;
+                    document.getElementById('Product-name').value = product.ProductName;
+                    document.getElementById('Product-category').value = product.CategoryID;
+                    document.getElementById('Product-price').value = product.Price;
+                    document.getElementById('Product-stock').value = product.QuantityInStock;
+                    document.getElementById('Product-supplier').value = product.SupplierID;
+
+                    openModal('Product-modal', 'Edit Product');
+                }
+            } catch (error) {
+                console.error('Error loading product:', error);
+                showToast('Error loading product', 'error');
+            }
+        }
+
+        // Function to delete product
+        async function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                try {
+                    await deleteEntity('product', id);
+                    loadProducts();
+                    showToast('Product deleted successfully', 'success');
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    showToast('Error deleting product', 'error');
+                }
+            }
+        }
+
+        // Function to load suppliers
+        async function loadSuppliers() {
+            try {
+                const suppliers = await fetchEntity('supplier');
+                const supplierTable = document.getElementById('Supplier-table');
+                supplierTable.innerHTML = '';
+
+                suppliers.forEach(supplier => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${supplier.SupplierID}</td>
+                        <td>${supplier.SupplierName}</td>
+                        <td>${supplier.ContactDetails || ''}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editSupplier(${supplier.SupplierID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteSupplier(${supplier.SupplierID})">Delete</button>
+                        </td>
+                    `;
+                    supplierTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading suppliers:', error);
+                showToast('Error loading suppliers', 'error');
+            }
+        }
+
+        // Function to load branches
+        async function loadBranches() {
+            try {
+                const branches = await fetchEntity('branch');
+                const branchTable = document.getElementById('Branch-table');
+                branchTable.innerHTML = '';
+
+                branches.forEach(branch => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${branch.BranchID}</td>
+                        <td>${branch.Location}</td>
+                        <td>${branch.ManagerName || 'No Manager'}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editBranch(${branch.BranchID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteBranch(${branch.BranchID})">Delete</button>
+                        </td>
+                    `;
+                    branchTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading branches:', error);
+                showToast('Error loading branches', 'error');
+            }
+        }
+
+        // Function to save supplier
+        async function saveSupplier() {
+            const supplierId = document.getElementById('Supplier-id').value;
+            const supplier = {
+                SupplierName: document.getElementById('Supplier-name').value,
+                ContactDetails: document.getElementById('Supplier-contact').value
+            };
+
+            try {
+                if (supplierId) {
+                    await updateEntity('supplier', parseInt(supplierId), supplier);
+                } else {
+                    await addEntity('supplier', supplier);
+                }
+
+                closeModal('Supplier-modal');
+                loadSuppliers();
+                showToast(`Supplier ${supplierId ? 'updated' : 'added'} successfully`, 'success');
+            } catch (error) {
+                console.error('Error saving supplier:', error);
+                showToast('Error saving supplier', 'error');
+            }
+        }
+
+        // Function to save branch
+        async function saveBranch() {
+            const branchId = document.getElementById('Branch-id').value;
+            const branch = {
+                Location: document.getElementById('Branch-location').value,
+                ManagerID: document.getElementById('Branch-manager').value || null
+            };
+
+            try {
+                if (branchId) {
+                    await updateEntity('branch', parseInt(branchId), branch);
+                } else {
+                    await addEntity('branch', branch);
+                }
+
+                closeModal('Branch-modal');
+                loadBranches();
+                showToast(`Branch ${branchId ? 'updated' : 'added'} successfully`, 'success');
+            } catch (error) {
+                console.error('Error saving branch:', error);
+                showToast('Error saving branch', 'error');
+            }
+        }
+
+        // Function to edit supplier
+        async function editSupplier(id) {
+            try {
+                const suppliers = await fetchEntity('supplier');
+                const supplier = suppliers.find(s => s.SupplierID === id);
+
+                if (supplier) {
+                    document.getElementById('Supplier-id').value = supplier.SupplierID;
+                    document.getElementById('Supplier-name').value = supplier.SupplierName;
+                    document.getElementById('Supplier-contact').value = supplier.ContactDetails || '';
+                    openModal('Supplier-modal', 'Edit Supplier');
+                }
+            } catch (error) {
+                console.error('Error loading supplier:', error);
+                showToast('Error loading supplier', 'error');
+            }
+        }
+
+        // Function to edit branch
+        async function editBranch(id) {
+            try {
+                const branches = await fetchEntity('branch');
+                const branch = branches.find(b => b.BranchID === id);
+
+                if (branch) {
+                    document.getElementById('Branch-id').value = branch.BranchID;
+                    document.getElementById('Branch-location').value = branch.Location;
+                    document.getElementById('Branch-manager').value = branch.ManagerID || '';
+                    openModal('Branch-modal', 'Edit Branch');
+                }
+            } catch (error) {
+                console.error('Error loading branch:', error);
+                showToast('Error loading branch', 'error');
+            }
+        }
+
+        // Function to delete supplier
+        async function deleteSupplier(id) {
+            if (confirm('Are you sure you want to delete this supplier?')) {
+                try {
+                    await deleteEntity('supplier', id);
+                    loadSuppliers();
+                    showToast('Supplier deleted successfully', 'success');
+                } catch (error) {
+                    console.error('Error deleting supplier:', error);
+                    showToast('Error deleting supplier', 'error');
+                }
+            }
+        }
+
+        // Function to delete branch
+        async function deleteBranch(id) {
+            if (confirm('Are you sure you want to delete this branch?')) {
+                try {
+                    await deleteEntity('branch', id);
+                    loadBranches();
+                    showToast('Branch deleted successfully', 'success');
+                } catch (error) {
+                    console.error('Error deleting branch:', error);
+                    showToast('Error deleting branch', 'error');
+                }
+            }
+        }
+
+        // Function to load inventory
+        async function loadInventory() {
+            try {
+                const inventory = await fetchEntity('inventory');
+                const inventoryTable = document.getElementById('Inventory-table');
+                inventoryTable.innerHTML = '';
+
+                inventory.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.InventoryID}</td>
+                        <td>${item.ProductName}</td>
+                        <td>${item.Quantity}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editInventory(${item.InventoryID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteInventory(${item.InventoryID})">Delete</button>
+                        </td>
+                    `;
+                    inventoryTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading inventory:', error);
+                showToast('Error loading inventory', 'error');
+            }
+        }
+
+        // Function to save inventory
+        async function saveInventory() {
+            try {
+                const inventoryId = document.getElementById('Inventory-id').value;
+                const inventoryData = {
+                    ProductID: document.getElementById('Inventory-product').value,
+                    Quantity: document.getElementById('Inventory-quantity').value
+                };
+
+                if (!inventoryData.ProductID || !inventoryData.Quantity) {
+                    showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/inventory${inventoryId ? `/${inventoryId}` : ''}`, {
+                    method: inventoryId ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(inventoryData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save inventory');
+                }
+
+                showToast(`Inventory ${inventoryId ? 'updated' : 'added'} successfully`, 'success');
+                closeModal('Inventory-modal');
+                loadInventory();
+            } catch (error) {
+                console.error('Error saving inventory:', error);
+                showToast('Error saving inventory', 'error');
+            }
+        }
+
+        // Function to edit inventory
+        async function editInventory(inventoryId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/inventory/${inventoryId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch inventory data');
+                }
+                const inventory = await response.json();
+
+                document.getElementById('Inventory-id').value = inventory.InventoryID;
+                document.getElementById('Inventory-product').value = inventory.ProductID;
+                document.getElementById('Inventory-quantity').value = inventory.Quantity;
+
+                openModal('Inventory-modal', 'Edit Inventory');
+            } catch (error) {
+                console.error('Error editing inventory:', error);
+                showToast('Error loading inventory data', 'error');
+            }
+        }
+
+        // Function to delete inventory
+        async function deleteInventory(inventoryId) {
+            if (!confirm('Are you sure you want to delete this inventory item?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/inventory/${inventoryId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete inventory');
+                }
+
+                showToast('Inventory deleted successfully', 'success');
+                loadInventory();
+            } catch (error) {
+                console.error('Error deleting inventory:', error);
+                showToast('Error deleting inventory', 'error');
+            }
+        }
+
+        // Function to load departments
+        async function loadDepartments() {
+            try {
+                const departments = await fetchEntity('department');
+                const departmentTable = document.getElementById('Department-table');
+                departmentTable.innerHTML = '';
+
+                departments.forEach(department => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${department.DepartmentID}</td>
+                        <td>${department.Name}</td>
+                        <td>${department.Description || ''}</td>
+                        <td>${department.BranchName || ''}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editDepartment(${department.DepartmentID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteDepartment(${department.DepartmentID})">Delete</button>
+                        </td>
+                    `;
+                    departmentTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading departments:', error);
+                showToast('Error loading departments', 'error');
+            }
+        }
+
+        // Function to save department
+        async function saveDepartment() {
+            try {
+                const departmentId = document.getElementById('Department-id').value;
+                const departmentData = {
+                    Name: document.getElementById('Department-name').value,
+                    Description: document.getElementById('Department-description').value,
+                    BranchID: document.getElementById('Department-branch').value
+                };
+
+                if (!departmentData.Name || !departmentData.BranchID) {
+                    showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/department${departmentId ? `/${departmentId}` : ''}`, {
+                    method: departmentId ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(departmentData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save department');
+                }
+
+                showToast(`Department ${departmentId ? 'updated' : 'added'} successfully`, 'success');
+                closeModal('Department-modal');
+                loadDepartments();
+            } catch (error) {
+                console.error('Error saving department:', error);
+                showToast('Error saving department', 'error');
+            }
+        }
+
+        // Function to edit department
+        async function editDepartment(departmentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/department/${departmentId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch department data');
+                }
+                const department = await response.json();
+
+                document.getElementById('Department-id').value = department.DepartmentID;
+                document.getElementById('Department-name').value = department.Name;
+                document.getElementById('Department-description').value = department.Description || '';
+                document.getElementById('Department-branch').value = department.BranchID;
+
+                openModal('Department-modal', 'Edit Department');
+            } catch (error) {
+                console.error('Error editing department:', error);
+                showToast('Error loading department data', 'error');
+            }
+        }
+
+        // Function to delete department
+        async function deleteDepartment(departmentId) {
+            if (!confirm('Are you sure you want to delete this department?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/department/${departmentId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete department');
+                }
+
+                showToast('Department deleted successfully', 'success');
+                loadDepartments();
+            } catch (error) {
+                console.error('Error deleting department:', error);
+                showToast('Error deleting department', 'error');
+            }
+        }
+
+        // Function to load branches for department dropdown
+        async function loadBranchesForDepartment() {
+            try {
+                const branches = await fetchEntity('branch');
+                const branchSelect = document.getElementById('Department-branch');
+                branchSelect.innerHTML = '<option value="">Select Branch</option>';
+
+                branches.forEach(branch => {
+                    const option = document.createElement('option');
+                    option.value = branch.BranchID;
+                    option.textContent = branch.Location;
+                    branchSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading branches:', error);
+                showToast('Error loading branches', 'error');
+            }
+        }
+
+        // Function to load orders
+        async function loadOrders() {
+            try {
+                const orders = await fetchEntity('order');
+                const orderTable = document.getElementById('Order-table');
+                orderTable.innerHTML = '';
+
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${order.OrderID}</td>
+                        <td>${order.CustomerName || 'N/A'}</td>
+                        <td>${order.EmployeeName || 'N/A'}</td>
+                        <td>${new Date(order.OrderDate).toLocaleDateString()}</td>
+                        <td>${order.DeliveryDate ? new Date(order.DeliveryDate).toLocaleDateString() : 'N/A'}</td>
+                        <td>${order.Status}</td>
+                        <td>${order.ProductName || 'N/A'}</td>
+                        <td>${order.Quantity}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editOrder(${order.OrderID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteOrder(${order.OrderID})">Delete</button>
+                        </td>
+                    `;
+                    orderTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                showToast('Error loading orders', 'error');
+            }
+        }
+
+        // Function to load customers for order dropdown
+        async function loadCustomersForOrder() {
+            try {
+                const customers = await fetchEntity('customer');
+                const customerSelect = document.getElementById('Order-customer');
+                customerSelect.innerHTML = '<option value="">Select Customer</option>';
+
+                customers.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.CustomerID;
+                    option.textContent = customer.Name;
+                    customerSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading customers:', error);
+                showToast('Error loading customers', 'error');
+            }
+        }
+
+        // Function to load employees for order dropdown
+        async function loadEmployeesForOrder() {
+            try {
+                const employees = await fetchEntity('employee');
+                const employeeSelect = document.getElementById('Order-employee');
+                employeeSelect.innerHTML = '<option value="">Select Employee</option>';
+
+                employees.forEach(employee => {
+                    const option = document.createElement('option');
+                    option.value = employee.EmployeeID;
+                    option.textContent = employee.Name;
+                    employeeSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading employees:', error);
+                showToast('Error loading employees', 'error');
+            }
+        }
+
+        // Function to load products for order dropdown
+        async function loadProductsForOrder() {
+            try {
+                const products = await fetchEntity('product');
+                const productSelect = document.getElementById('Order-product');
+                productSelect.innerHTML = '<option value="">Select Product</option>';
+
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.ProductID;
+                    option.textContent = `${product.ProductName} (GHS ${parseFloat(product.Price).toFixed(2)})`;
+                    productSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showToast('Error loading products', 'error');
+            }
+        }
+
+        // Function to edit order
+        async function editOrder(orderId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/order/${orderId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch order data');
+                }
+                const order = await response.json();
+
+                document.getElementById('Order-id').value = order.OrderID;
+                document.getElementById('Order-customer').value = order.CustomerID;
+                document.getElementById('Order-employee').value = order.EmployeeID;
+                document.getElementById('Order-orderDate').value = order.OrderDate.split('T')[0];
+                document.getElementById('Order-deliveryDate').value = order.DeliveryDate ? order.DeliveryDate.split('T')[0] : '';
+                document.getElementById('Order-status').value = order.Status;
+                document.getElementById('Order-product').value = order.ProductID;
+                document.getElementById('Order-quantity').value = order.Quantity;
+
+                openModal('Order-modal', 'Edit Order');
+            } catch (error) {
+                console.error('Error editing order:', error);
+                showToast('Error loading order data', 'error');
+            }
+        }
+
+        // Function to delete order
+        async function deleteOrder(orderId) {
+            if (!confirm('Are you sure you want to delete this order?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/order/${orderId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete order');
+                }
+
+                showToast('Order deleted successfully', 'success');
+                loadOrders();
+            } catch (error) {
+                console.error('Error deleting order:', error);
+                showToast('Error deleting order', 'error');
+            }
+        }
+
+        // Function to save order
+        async function saveOrder() {
+            try {
+                const orderId = document.getElementById('Order-id').value;
+                const orderData = {
+                    CustomerID: document.getElementById('Order-customer').value,
+                    EmployeeID: document.getElementById('Order-employee').value,
+                    OrderDate: document.getElementById('Order-orderDate').value,
+                    DeliveryDate: document.getElementById('Order-deliveryDate').value || null,
+                    Status: document.getElementById('Order-status').value,
+                    ProductID: document.getElementById('Order-product').value,
+                    Quantity: document.getElementById('Order-quantity').value
+                };
+
+                if (!orderData.CustomerID || !orderData.EmployeeID || !orderData.OrderDate || 
+                    !orderData.Status || !orderData.ProductID || !orderData.Quantity) {
+                    showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/order${orderId ? `/${orderId}` : ''}`, {
+                    method: orderId ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save order');
+                }
+
+                showToast(`Order ${orderId ? 'updated' : 'added'} successfully`, 'success');
+                closeModal('Order-modal');
+                loadOrders();
+            } catch (error) {
+                console.error('Error saving order:', error);
+                showToast('Error saving order', 'error');
+            }
+        }
+
+        // Payroll functions
+        async function loadPayroll() {
+            try {
+                const payrolls = await fetchEntity('payroll');
+                const payrollTable = document.getElementById('Payroll-table');
+                payrollTable.innerHTML = '';
+
+                payrolls.forEach(payroll => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${payroll.PayrollID}</td>
+                        <td>${payroll.EmployeeName}</td>
+                        <td>GHS ${parseFloat(payroll.Salary).toFixed(2)}</td>
+                        <td>${new Date(payroll.StartDate).toLocaleDateString()}</td>
+                        <td>${payroll.EndDate ? new Date(payroll.EndDate).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editPayroll(${payroll.PayrollID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deletePayroll(${payroll.PayrollID})">Delete</button>
+                        </td>
+                    `;
+                    payrollTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading payroll:', error);
+                showToast('Error loading payroll', 'error');
+            }
+        }
+
+        async function loadEmployeesForPayroll() {
+            try {
+                const employees = await fetchEntity('employee');
+                const employeeSelect = document.getElementById('Payroll-employee');
+                employeeSelect.innerHTML = '<option value="">Select Employee</option>';
+                
+                employees.forEach(employee => {
+                    const option = document.createElement('option');
+                    option.value = employee.EmployeeID;
+                    option.textContent = `${employee.Name} (${employee.Position})`;
+                    employeeSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading employees:', error);
+                showToast('Error loading employees', 'error');
+            }
+        }
+
+        async function savePayroll() {
+            try {
+                const payrollId = document.getElementById('Payroll-id').value;
+                const payrollData = {
+                    EmployeeID: document.getElementById('Payroll-employee').value,
+                    Salary: document.getElementById('Payroll-salary').value,
+                    StartDate: document.getElementById('Payroll-startDate').value,
+                    EndDate: document.getElementById('Payroll-endDate').value || null
+                };
+
+                if (!payrollData.EmployeeID || !payrollData.Salary || !payrollData.StartDate) {
+                    showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                if (payrollId) {
+                    await updateEntity('payroll', parseInt(payrollId), payrollData);
+                } else {
+                    await addEntity('payroll', payrollData);
+                }
+
+                showToast(`Payroll ${payrollId ? 'updated' : 'added'} successfully`, 'success');
+                closeModal('Payroll-modal');
+                loadPayroll();
+            } catch (error) {
+                console.error('Error saving payroll:', error);
+                showToast('Error saving payroll', 'error');
+            }
+        }
+
+        async function editPayroll(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/payroll/${id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch payroll data');
+                }
+                const payroll = await response.json();
+
+                document.getElementById('Payroll-id').value = payroll.PayrollID;
+                document.getElementById('Payroll-employee').value = payroll.EmployeeID;
+                document.getElementById('Payroll-salary').value = payroll.Salary;
+                document.getElementById('Payroll-startDate').value = payroll.StartDate.split('T')[0];
+                document.getElementById('Payroll-endDate').value = payroll.EndDate ? payroll.EndDate.split('T')[0] : '';
+
+                openModal('Payroll-modal', 'Edit Payroll');
+            } catch (error) {
+                console.error('Error editing payroll:', error);
+                showToast('Error loading payroll data', 'error');
+            }
+        }
+
+        async function deletePayroll(id) {
+            if (!confirm('Are you sure you want to delete this payroll record?')) {
+                return;
+            }
+
+            try {
+                await deleteEntity('payroll', id);
+                showToast('Payroll deleted successfully', 'success');
+                loadPayroll();
+            } catch (error) {
+                console.error('Error deleting payroll:', error);
+                showToast('Error deleting payroll', 'error');
+            }
+        }
+
+        // Load dashboard data when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData();
+
+            // Add event listeners for navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = e.target.getAttribute('data-section');
+
+                    // Hide all sections
+                    document.querySelectorAll('.content-section').forEach(s => {
+                        s.classList.add('hidden');
+                    });
+
+                    // Show selected section
+                    document.getElementById(section).classList.remove('hidden');
+
+                    // Update active link
+                    document.querySelectorAll('.nav-link').forEach(l => {
+                        l.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+
+                    // Load section data
+                    switch (section) {
+                        case 'ProductCategory':
+                            loadCategories();
+                            break;
+                        case 'Employee':
+                            loadEmployees();
+                            break;
+                        case 'Product':
+                            loadProducts();
+                            break;
+                        case 'Supplier':
+                            loadSuppliers();
+                            break;
+                        case 'Branch':
+                            loadBranches();
+                            break;
+                        case 'Customer':
+                            loadCustomers();
+                            break;
+                        case 'Inventory':
+                            loadInventory();
+                            break;
+                        case 'Department':
+                            loadDepartments();
+                            break;
+                        case 'Order':
+                            loadOrders();
+                            break;
+                        case 'Transaction':
+                            loadTransactions();
+                            loadOrdersForTransaction();
+                            loadCustomersForTransaction();
+                            break;
+                        case 'Payroll':
+                            loadPayroll();
+                            break;
+                    }
+                });
+            });
+        });
+
+        // Add event listeners for the forms
+        document.getElementById('Customer-form').addEventListener('submit', async(e) => {
+            e.preventDefault();
+            await saveCustomer();
+        });
+
+        document.getElementById('Inventory-form').addEventListener('submit', async(e) => {
+            e.preventDefault();
+            await saveInventory();
+        });
+
+        document.getElementById('Department-form').addEventListener('submit', async(e) => {
+            e.preventDefault();
+            await saveDepartment();
+        });
+
+        // Transaction functions
+        async function loadTransactions() {
+            try {
+                const transactions = await fetchEntity('transaction');
+                const transactionTable = document.getElementById('Transaction-table');
+                transactionTable.innerHTML = '';
+
+                transactions.forEach(transaction => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transaction.TransactionID}</td>
+                        <td>${transaction.OrderID || 'N/A'}</td>
+                        <td>${transaction.CustomerName || 'N/A'}</td>
+                        <td>${transaction.ProductName || 'N/A'}</td>
+                        <td>${transaction.PaymentType}</td>
+                        <td>GHS ${parseFloat(transaction.TotalAmount).toFixed(2)}</td>
+                        <td>${new Date(transaction.Date).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editTransaction(${transaction.TransactionID})">Edit</button>
+                            <button class="btn btn-delete" onclick="deleteTransaction(${transaction.TransactionID})">Delete</button>
+                        </td>
+                    `;
+                    transactionTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                showToast('Error loading transactions', 'error');
+            }
+        }
+
+        async function loadOrdersForTransaction() {
+            try {
+                const orders = await fetchEntity('order');
+                const orderSelect = document.getElementById('Transaction-order');
+                orderSelect.innerHTML = '<option value="">Select Order</option>';
+                
+                orders.forEach(order => {
+                    const option = document.createElement('option');
+                    option.value = order.OrderID;
+                    option.textContent = `Order #${order.OrderID} - ${order.ProductName || 'N/A'}`;
+                    orderSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                showToast('Error loading orders', 'error');
+            }
+        }
+
+        async function loadCustomersForTransaction() {
+            try {
+                const customers = await fetchEntity('customer');
+                const customerSelect = document.getElementById('Transaction-customer');
+                customerSelect.innerHTML = '<option value="">Select Customer</option>';
+                
+                customers.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.CustomerID;
+                    option.textContent = customer.Name;
+                    customerSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading customers:', error);
+                showToast('Error loading customers', 'error');
+            }
+        }
+
+        async function saveTransaction() {
+            try {
+                const transactionId = document.getElementById('Transaction-id').value;
+                const transactionData = {
+                    OrderID: document.getElementById('Transaction-order').value,
+                    CustomerID: document.getElementById('Transaction-customer').value,
+                    PaymentType: document.getElementById('Transaction-paymentType').value,
+                    TotalAmount: document.getElementById('Transaction-totalAmount').value,
+                    Date: document.getElementById('Transaction-date').value
+                };
+
+                if (!transactionData.OrderID || !transactionData.CustomerID || !transactionData.PaymentType || 
+                    !transactionData.TotalAmount || !transactionData.Date) {
+                    showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                if (transactionId) {
+                    await updateEntity('transaction', parseInt(transactionId), transactionData);
+                } else {
+                    await addEntity('transaction', transactionData);
+                }
+
+                showToast(`Transaction ${transactionId ? 'updated' : 'added'} successfully`, 'success');
+                closeModal('Transaction-modal');
+                loadTransactions();
+            } catch (error) {
+                console.error('Error saving transaction:', error);
+                showToast('Error saving transaction', 'error');
+            }
+        }
+
+        async function editTransaction(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/transaction/${id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch transaction data');
+                }
+                const transaction = await response.json();
+
+                document.getElementById('Transaction-id').value = transaction.TransactionID;
+                document.getElementById('Transaction-order').value = transaction.OrderID;
+                document.getElementById('Transaction-customer').value = transaction.CustomerID;
+                document.getElementById('Transaction-paymentType').value = transaction.PaymentType;
+                document.getElementById('Transaction-totalAmount').value = transaction.TotalAmount;
+                document.getElementById('Transaction-date').value = transaction.Date.split('T')[0];
+
+                openModal('Transaction-modal', 'Edit Transaction');
+            } catch (error) {
+                console.error('Error editing transaction:', error);
+                showToast('Error loading transaction data', 'error');
+            }
+        }
+
+        async function deleteTransaction(id) {
+            if (!confirm('Are you sure you want to delete this transaction?')) {
+                return;
+            }
+
+            try {
+                await deleteEntity('transaction', id);
+                showToast('Transaction deleted successfully', 'success');
+                loadTransactions();
+            } catch (error) {
+                console.error('Error deleting transaction:', error);
+                showToast('Error deleting transaction', 'error');
+            }
+        }
+
+        // Report functions
+        async function generateReport() {
+            const reportType = document.getElementById('report-type').value;
+            const reportTable = document.getElementById('report-table');
+            const reportChartContainer = document.getElementById('report-chart-container');
+            const reportTableHead = document.getElementById('report-table-head');
+            const reportTableBody = document.getElementById('report-table-body');
+            const reportChart = document.getElementById('report-chart');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/reports/${reportType}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch report data');
+                }
+
+                // Check if the response is CSV
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('text/csv')) {
+                    // Handle CSV download
+                    const contentDisposition = response.headers.get('Content-Disposition');
+                    const filename = contentDisposition 
+                        ? contentDisposition.split('filename=')[1] 
+                        : `${reportType}.csv`;
+                    
+                    const csvData = await response.text();
+                    downloadCSV(csvData, filename);
+                    showToast('Report downloaded successfully', 'success');
+                } else {
+                    // Handle JSON response for table display
+                    const reportData = await response.json();
+
+                    // Clear previous data
+                    reportTableHead.innerHTML = '';
+                    reportTableBody.innerHTML = '';
+                    reportTable.classList.remove('hidden');
+
+                    // Generate table headers and data based on report type
+                    switch (reportType) {
+                        case 'total-revenue-per-customer':
+                            generateRevenuePerCustomerReport(reportData, reportTableHead, reportTableBody, reportChart);
+                            break;
+                        case 'low-stock-products':
+                            generateLowStockReport(reportData, reportTableHead, reportTableBody, reportChart);
+                            break;
+                        case 'employees-with-branch-department':
+                            generateEmployeeBranchReport(reportData, reportTableHead, reportTableBody, reportChart);
+                            break;
+                        case 'orders-with-product-details':
+                            generateOrderProductReport(reportData, reportTableHead, reportTableBody, reportChart);
+                            break;
+                        case 'total-quantity-per-category':
+                            generateCategoryQuantityReport(reportData, reportTableHead, reportTableBody, reportChart);
+                            break;
+                        case 'employees-no-payroll':
+                            generateNoPayrollReport(reportData, reportTableHead, reportTableBody, reportChart);
+                            break;
+                        case 'high-spending-customers':
+                            generateHighSpendingReport(reportData, reportTableHead, reportTableBody, reportChart);
+                            break;
+                    }
+                }
+            } catch (error) {
+                console.error('Error generating report:', error);
+                showToast('Error generating report', 'error');
+            }
+        }
+
+        function generateRevenuePerCustomerReport(data, tableHead, tableBody, chart) {
+            // Table headers
+            const headers = ['Customer Name', 'Total Revenue (GHS)', 'Number of Transactions'];
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            tableHead.appendChild(headerRow);
+
+            // Table data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.CustomerName}</td>
+                    <td>GHS ${parseFloat(item.TotalRevenue).toFixed(2)}</td>
+                    <td>${item.TransactionCount}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Chart
+            const ctx = chart.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.CustomerName),
+                    datasets: [{
+                        label: 'Total Revenue (GHS)',
+                        data: data.map(item => parseFloat(item.TotalRevenue)),
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateLowStockReport(data, tableHead, tableBody, chart) {
+            // Table headers
+            const headers = ['Product Name', 'Category', 'Current Stock', 'Minimum Stock Level'];
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            tableHead.appendChild(headerRow);
+
+            // Table data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.ProductName}</td>
+                    <td>${item.CategoryName}</td>
+                    <td>${item.CurrentStock}</td>
+                    <td>${item.MinimumStockLevel}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Chart
+            const ctx = chart.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.ProductName),
+                    datasets: [{
+                        label: 'Current Stock',
+                        data: data.map(item => item.CurrentStock),
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateEmployeeBranchReport(data, tableHead, tableBody, chart) {
+            // Table headers
+            const headers = ['Employee Name', 'Position', 'Branch', 'Department'];
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            tableHead.appendChild(headerRow);
+
+            // Table data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.EmployeeName}</td>
+                    <td>${item.Position}</td>
+                    <td>${item.BranchName}</td>
+                    <td>${item.DepartmentName}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Chart - Employee count by branch
+            const branchData = {};
+            data.forEach(item => {
+                if (!branchData[item.BranchName]) {
+                    branchData[item.BranchName] = 0;
+                }
+                branchData[item.BranchName]++;
+            });
+
+            const ctx = chart.getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(branchData),
+                    datasets: [{
+                        data: Object.values(branchData),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(75, 192, 192, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Employees per Branch'
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateOrderProductReport(data, tableHead, tableBody, chart) {
+            // Table headers
+            const headers = ['Order ID', 'Customer', 'Product', 'Quantity', 'Order Date', 'Status'];
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            tableHead.appendChild(headerRow);
+
+            // Table data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.OrderID}</td>
+                    <td>${item.CustomerName}</td>
+                    <td>${item.ProductName}</td>
+                    <td>${item.Quantity}</td>
+                    <td>${new Date(item.OrderDate).toLocaleDateString()}</td>
+                    <td>${item.Status}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Chart - Orders by status
+            const statusData = {};
+            data.forEach(item => {
+                if (!statusData[item.Status]) {
+                    statusData[item.Status] = 0;
+                }
+                statusData[item.Status]++;
+            });
+
+            const ctx = chart.getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusData),
+                    datasets: [{
+                        data: Object.values(statusData),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(75, 192, 192, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Orders by Status'
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateCategoryQuantityReport(data, tableHead, tableBody, chart) {
+            // Table headers
+            const headers = ['Category', 'Total Quantity Ordered'];
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            tableHead.appendChild(headerRow);
+
+            // Table data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.CategoryName}</td>
+                    <td>${item.TotalQuantity}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Chart
+            const ctx = chart.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.CategoryName),
+                    datasets: [{
+                        label: 'Total Quantity Ordered',
+                        data: data.map(item => item.TotalQuantity),
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateNoPayrollReport(data, tableHead, tableBody, chart) {
+            // Table headers
+            const headers = ['Employee Name', 'Position', 'Branch'];
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            tableHead.appendChild(headerRow);
+
+            // Table data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.EmployeeName}</td>
+                    <td>${item.Position}</td>
+                    <td>${item.BranchName}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Chart - Employees without payroll by branch
+            const branchData = {};
+            data.forEach(item => {
+                if (!branchData[item.BranchName]) {
+                    branchData[item.BranchName] = 0;
+                }
+                branchData[item.BranchName]++;
+            });
+
+            const ctx = chart.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(branchData),
+                    datasets: [{
+                        label: 'Employees without Payroll',
+                        data: Object.values(branchData),
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateHighSpendingReport(data, tableHead, tableBody, chart) {
+            // Table headers
+            const headers = ['Customer Name', 'Total Spent (GHS)', 'Number of Orders'];
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            tableHead.appendChild(headerRow);
+
+            // Table data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.CustomerName}</td>
+                    <td>GHS ${parseFloat(item.TotalSpent).toFixed(2)}</td>
+                    <td>${item.OrderCount}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Chart
+            const ctx = chart.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.CustomerName),
+                    datasets: [{
+                        label: 'Total Spent (GHS)',
+                        data: data.map(item => parseFloat(item.TotalSpent)),
+                        backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to download CSV file
+        function downloadCSV(data, filename) {
+            const blob = new Blob([data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Keep only one event listener for report generation
+        document.getElementById('generate-report-btn').addEventListener('click', generateReport);
+    </script>
+</body>
+
+</html>
