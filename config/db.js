@@ -1,10 +1,12 @@
 const mysql = require('mysql2/promise');
+require('dotenv').config();
 
 const pool = mysql.createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    password: 'new_password',
-    database: 'Melcom',
+    host: process.env.DB_HOST || '127.0.0.1',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'new_password',
+    database: process.env.DB_NAME || 'Melcom',
+    port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
@@ -25,8 +27,9 @@ pool.getConnection()
         console.error('Please check:');
         console.error('1. MySQL service is running');
         console.error('2. Database credentials are correct');
-        console.error('3. Database "Melcom" exists');
-        console.error('4. Port 3306 is accessible');
+        console.error('3. Database exists');
+        console.error('4. Port is accessible');
+        console.error('5. Environment variables are set correctly');
     });
 
 module.exports = pool;
