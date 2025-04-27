@@ -53,6 +53,12 @@ Make sure `melcom-ssl-public-cert.cert` is present in the project root for secur
 ```bash
 node server.js
 ```
+or
+
+```bash
+npm start
+```
+
 The server will run at `http://localhost:3000` by default.
 
 ---
