@@ -22,14 +22,14 @@ DROP TABLE IF EXISTS ProductCategory;
 
 -- ProductCategory (no FK dependencies)
 CREATE TABLE ProductCategory (
-    CategoryID INT PRIMARY KEY,
+    CategoryID INT PRIMARY KEY AUTO_INCREMENT,
     CategoryName VARCHAR(50) NOT NULL,
     CONSTRAINT CHK_CategoryName CHECK (CategoryName <> '')
 );
 
 -- Supplier (no FK dependencies)
-CREATE TABLE Supplier (
-    SupplierID INT PRIMARY KEY,
+CREATE TABLE Supplier ( 
+    SupplierID INT PRIMARY KEY AUTO_INCREMENT,
     SupplierName VARCHAR(100) NOT NULL,
     ContactDetails VARCHAR(255),
     CONSTRAINT CHK_SupplierName CHECK (SupplierName <> '')
@@ -37,7 +37,7 @@ CREATE TABLE Supplier (
 
 -- Customer (no FK dependencies)
 CREATE TABLE Customer (
-    CustomerID INT PRIMARY KEY,
+    CustomerID INT PRIMARY KEY AUTO_INCREMENT,
     LoyaltyPoints INT DEFAULT 0,
     Address VARCHAR(255) NOT NULL,
     Name VARCHAR(100) NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE Customer (
 
 -- Branch (ManagerID references Employee, but we can create it first and add the FK later)
 CREATE TABLE Branch (
-    BranchID INT PRIMARY KEY,
+    BranchID INT PRIMARY KEY AUTO_INCREMENT,
     ManagerID INT, -- FK to Employee, added later
     Location VARCHAR(255) NOT NULL,
     CONSTRAINT CHK_Location CHECK (Location <> '')
@@ -61,7 +61,7 @@ CREATE TABLE Branch (
 
 -- Product (depends on ProductCategory and Supplier)
 CREATE TABLE Product (
-    ProductID INT PRIMARY KEY,
+    ProductID INT PRIMARY KEY AUTO_INCREMENT,
     ProductName VARCHAR(100) NOT NULL,
     CategoryID INT,
     Price DECIMAL(10, 2) NOT NULL,
@@ -92,7 +92,7 @@ ADD CONSTRAINT FK_Branch_Manager FOREIGN KEY (ManagerID) REFERENCES Employee(Emp
 
 -- Department (depends on Branch)
 CREATE TABLE Department (
-    DepartmentID INT PRIMARY KEY,
+    DepartmentID INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(50) NOT NULL,
     Description TEXT,
     BranchID INT,
@@ -102,7 +102,7 @@ CREATE TABLE Department (
 
 -- Inventory (depends on Product)
 CREATE TABLE Inventory (
-    InventoryID INT PRIMARY KEY,
+    InventoryID INT PRIMARY KEY AUTO_INCREMENT,
     ProductID INT,
     Quantity INT NOT NULL,
     CONSTRAINT FK_Inventory_Product FOREIGN KEY (ProductID) REFERENCES Product(ProductID) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -111,7 +111,7 @@ CREATE TABLE Inventory (
 
 -- Payroll (depends on Employee)
 CREATE TABLE Payroll (
-    PayrollID INT PRIMARY KEY,
+    PayrollID INT PRIMARY KEY AUTO_INCREMENT,
     EmployeeID INT,
     Salary DECIMAL(10, 2) NOT NULL,
     StartDate DATE NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE Payroll (
 
 -- Order (depends on Customer, Employee, and Product)
 CREATE TABLE `Order` (
-    OrderID INT PRIMARY KEY,
+    OrderID INT PRIMARY KEY AUTO_INCREMENT,
     CustomerID INT,
     EmployeeID INT,
     OrderDate DATE NOT NULL,
@@ -141,7 +141,7 @@ CREATE TABLE `Order` (
 
 -- Transaction (depends on Order and Customer)
 CREATE TABLE `Transaction` (
-    TransactionID INT PRIMARY KEY,
+    TransactionID INT PRIMARY KEY AUTO_INCREMENT,
     OrderID INT,
     CustomerID INT,
     PaymentType VARCHAR(50) NOT NULL,
