@@ -1,9 +1,8 @@
 const mysql = require('mysql2/promise');
 const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
-// Create the pool directly
-// melcom-ssl-public-cert.cert
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'SG-melcom-12426-mysql-master.servers.mongodirector.com',
     user: process.env.DB_USER || 'sgroot',
@@ -13,23 +12,20 @@ const pool = mysql.createPool({
     port: 3306,
     connectionLimit: 10,
     queueLimit: 0,
+    connectTimeout: 10000, // ADD THIS!
     ssl: {
-        ca: fs.readFileSync("melcom-ssl-public-cert.cert"),
+        ca: fs.readFileSync(path.join(__dirname, 'melcom-ssl-public-cert.cert')), // USE SAFE PATH
     },
 });
 
-// Test the connection
 pool.getConnection()
     .then(connection => {
         console.log('Successfully connected to ScaleGrid MySQL database');
         connection.release();
     })
     .catch(err => {
-        console.error('Error connecting to ScaleGrid MySQL database:', err);
-        console.error('Please check:');
-        console.error('1. Your ScaleGrid credentials');
-        console.error('2. Network connectivity');
-        console.error('3. SSL configuration');
+        console.error('Error connecting to ScaleGrid MySQL database:', err.message);
+        process.exit(1); // <-- EXIT if DB is broken, don't let server stay pending
     });
 
 module.exports = pool;
