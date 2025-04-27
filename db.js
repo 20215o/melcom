@@ -1,7 +1,9 @@
 const mysql = require('mysql2/promise');
+const fs = require('fs');
 require('dotenv').config();
 
 // Create the pool directly
+// melcom-ssl-public-cert.cert
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'SG-melcom-12426-mysql-master.servers.mongodirector.com',
     user: process.env.DB_USER || 'sgroot',
@@ -12,8 +14,8 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0,
     ssl: {
-        rejectUnauthorized: false
-    }
+        ca: fs.readFileSync("melcom-ssl-public-cert.cert"),
+    },
 });
 
 // Test the connection
