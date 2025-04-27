@@ -8,7 +8,7 @@ const pool = mysql.createPool({
     host: process.env.DB_HOST || 'SG-melcom-12426-mysql-master.servers.mongodirector.com',
     user: process.env.DB_USER || 'sgroot',
     password: process.env.DB_PASSWORD || '6jDSGisNpA2u9-uv',
-    database: 'melcom',
+    database: 'Melcom',
     waitForConnections: true,
     port: 3306,
     connectionLimit: 10,
