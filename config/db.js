@@ -1,35 +1,40 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
+// Log environment variables (for debugging, remove in production)
+console.log('Database Configuration:', {
+    host: 'SG-melcom-12426-mysql-master.servers.mongodirector.com',
+    user: 'sgroot',
+    database: 'melcom',
+    port: 3306
+});
+
 const pool = mysql.createPool({
-    host: process.env.DB_HOST || '127.0.0.1',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'new_password',
-    database: process.env.DB_NAME || 'Melcom',
-    port: process.env.DB_PORT || 3306,
+    host: 'SG-melcom-12426-mysql-master.servers.mongodirector.com',
+    user: 'sgroot',
+    password: process.env.DB_PASSWORD,
+    database: 'melcom',
+    port: 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    connectTimeout: 10000,
-    acquireTimeout: 10000,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 0
+    ssl: {
+        rejectUnauthorized: true
+    }
 });
 
 // Test the connection
 pool.getConnection()
     .then(connection => {
-        console.log('Successfully connected to the database');
+        console.log('Successfully connected to ScaleGrid MySQL database');
         connection.release();
     })
     .catch(err => {
-        console.error('Error connecting to the database:', err);
+        console.error('Error connecting to ScaleGrid MySQL database:', err);
         console.error('Please check:');
-        console.error('1. MySQL service is running');
-        console.error('2. Database credentials are correct');
-        console.error('3. Database exists');
-        console.error('4. Port is accessible');
-        console.error('5. Environment variables are set correctly');
+        console.error('1. Your ScaleGrid credentials');
+        console.error('2. Network connectivity');
+        console.error('3. SSL configuration');
     });
 
 module.exports = pool;
