@@ -1,10 +1,28 @@
 // Base URL for API endpoints
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 // Generic function to fetch entities
 async function fetchEntity(entityType) {
     try {
-        const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}`);
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            window.location.href = '/login.html';
+            return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_email');
+            window.location.href = '/login.html';
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -18,13 +36,28 @@ async function fetchEntity(entityType) {
 // Generic function to add an entity
 async function addEntity(entityType, data) {
     try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            window.location.href = '/login.html';
+            return;
+        }
+
         const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data)
         });
+
+        if (response.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_email');
+            window.location.href = '/login.html';
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -38,13 +71,28 @@ async function addEntity(entityType, data) {
 // Generic function to update an entity
 async function updateEntity(entityType, id, data) {
     try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            window.location.href = '/login.html';
+            return;
+        }
+
         const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data)
         });
+
+        if (response.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_email');
+            window.location.href = '/login.html';
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -58,9 +106,26 @@ async function updateEntity(entityType, id, data) {
 // Generic function to delete an entity
 async function deleteEntity(entityType, id) {
     try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            window.location.href = '/login.html';
+            return;
+        }
+
         const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
+
+        if (response.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_email');
+            window.location.href = '/login.html';
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

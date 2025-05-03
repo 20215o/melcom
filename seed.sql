@@ -1,20 +1,20 @@
-USE Melcom;
+USE defaultdb;
 
 -- Clear existing data in reverse order of dependencies
-DELETE FROM `Transaction`;
-DELETE FROM `Order`;
-DELETE FROM Payroll;
-DELETE FROM Inventory;
-DELETE FROM Department;
-DELETE FROM Employee;
-DELETE FROM Product;
-DELETE FROM Branch;
-DELETE FROM Customer;
-DELETE FROM Supplier;
-DELETE FROM ProductCategory;
+DELETE FROM transaction;
+DELETE FROM `order`;
+DELETE FROM payroll;
+DELETE FROM inventory;
+DELETE FROM department;
+DELETE FROM employee;
+DELETE FROM product;
+DELETE FROM branch;
+DELETE FROM customer;
+DELETE FROM supplier;
+DELETE FROM productcategory;
 
 -- Insert sample data for ProductCategory
-INSERT INTO ProductCategory (CategoryID, CategoryName) VALUES
+INSERT INTO productcategory (CategoryID, CategoryName) VALUES
 (1, 'Electronics'),
 (2, 'Clothing'),
 (3, 'Groceries'),
@@ -22,7 +22,7 @@ INSERT INTO ProductCategory (CategoryID, CategoryName) VALUES
 (5, 'Toys');
 
 -- Insert sample data for Supplier
-INSERT INTO Supplier (SupplierID, SupplierName, ContactDetails) VALUES
+INSERT INTO supplier (SupplierID, SupplierName, ContactDetails) VALUES
 (1, 'TechTrend Innovations', 'tech@trend.com'),
 (2, 'FashionHub', 'contact@fashionhub.com'),
 (3, 'GroceryMart', 'info@grocerymart.com'),
@@ -30,7 +30,7 @@ INSERT INTO Supplier (SupplierID, SupplierName, ContactDetails) VALUES
 (5, 'ToyGalaxy', 'support@toygalaxy.com');
 
 -- Insert sample data for Customer
-INSERT INTO Customer (CustomerID, Name, LoyaltyPoints, Address, PhoneNumber, Email) VALUES
+INSERT INTO customer (CustomerID, Name, LoyaltyPoints, Address, PhoneNumber, Email) VALUES
 (1, 'John Doe', 100, '123 Main St, Accra', '0241234567', 'john@example.com'),
 (2, 'Jane Smith', 50, '456 High St, Kumasi', '0242345678', 'jane@example.com'),
 (3, 'Bob Johnson', 200, '789 Market St, Tema', '0243456789', 'bob@example.com'),
@@ -38,7 +38,7 @@ INSERT INTO Customer (CustomerID, Name, LoyaltyPoints, Address, PhoneNumber, Ema
 (5, 'Charlie Wilson', 150, '654 Hill Ave, Cape Coast', '0245678901', 'charlie@example.com');
 
 -- Insert sample data for Branch
-INSERT INTO Branch (BranchID, Location) VALUES
+INSERT INTO branch (BranchID, Location) VALUES
 (1, 'Accra'),
 (2, 'Kumasi'),
 (3, 'Tema'),
@@ -46,7 +46,7 @@ INSERT INTO Branch (BranchID, Location) VALUES
 (5, 'Cape Coast');
 
 -- Insert sample data for Product
-INSERT INTO Product (ProductID, ProductName, CategoryID, Price, QuantityInStock, SupplierID) VALUES
+INSERT INTO product (ProductID, ProductName, CategoryID, Price, QuantityInStock, SupplierID) VALUES
 (1, 'Laptop', 1, 1500.00, 10, 1),
 (2, 'T-Shirt', 2, 20.00, 50, 2),
 (3, 'Rice Bag', 3, 15.00, 100, 3),
@@ -54,7 +54,7 @@ INSERT INTO Product (ProductID, ProductName, CategoryID, Price, QuantityInStock,
 (5, 'Teddy Bear', 5, 10.00, 30, 5);
 
 -- Insert sample data for Employee
-INSERT INTO Employee (EmployeeID, Name, Position, PhoneNumber, BranchID) VALUES
+INSERT INTO employee (EmployeeID, Name, Position, PhoneNumber, BranchID) VALUES
 (1, 'Esi Amoah', 'Manager', '0301234567', 1),
 (2, 'Kojo Danso', 'Manager', '0302345678', 2),
 (3, 'Akua Yeboah', 'Manager', '0303456789', 3),
@@ -62,14 +62,14 @@ INSERT INTO Employee (EmployeeID, Name, Position, PhoneNumber, BranchID) VALUES
 (5, 'Abena Mensah', 'Manager', '0305678901', 5);
 
 -- Update Branch with ManagerID
-UPDATE Branch SET ManagerID = 1 WHERE BranchID = 1;
-UPDATE Branch SET ManagerID = 2 WHERE BranchID = 2;
-UPDATE Branch SET ManagerID = 3 WHERE BranchID = 3;
-UPDATE Branch SET ManagerID = 4 WHERE BranchID = 4;
-UPDATE Branch SET ManagerID = 5 WHERE BranchID = 5;
+UPDATE branch SET ManagerID = 1 WHERE BranchID = 1;
+UPDATE branch SET ManagerID = 2 WHERE BranchID = 2;
+UPDATE branch SET ManagerID = 3 WHERE BranchID = 3;
+UPDATE branch SET ManagerID = 4 WHERE BranchID = 4;
+UPDATE branch SET ManagerID = 5 WHERE BranchID = 5;
 
 -- Insert sample data for Department
-INSERT INTO Department (DepartmentID, Name, Description, BranchID) VALUES
+INSERT INTO department (DepartmentID, Name, Description, BranchID) VALUES
 (1, 'Sales', 'Handles sales', 1),
 (2, 'HR', 'Human Resources', 2),
 (3, 'Inventory', 'Manages stock', 3),
@@ -77,7 +77,7 @@ INSERT INTO Department (DepartmentID, Name, Description, BranchID) VALUES
 (5, 'Marketing', 'Promotes products', 5);
 
 -- Insert sample data for Inventory
-INSERT INTO Inventory (InventoryID, ProductID, Quantity) VALUES
+INSERT INTO inventory (InventoryID, ProductID, Quantity) VALUES
 (1, 1, 10),
 (2, 2, 50),
 (3, 3, 100),
@@ -85,7 +85,7 @@ INSERT INTO Inventory (InventoryID, ProductID, Quantity) VALUES
 (5, 5, 30);
 
 -- Insert sample data for Payroll
-INSERT INTO Payroll (PayrollID, EmployeeID, Salary, StartDate, EndDate) VALUES
+INSERT INTO payroll (PayrollID, EmployeeID, Salary, StartDate, EndDate) VALUES
 (1, 1, 2000.00, '2024-01-01', '2024-12-31'),
 (2, 2, 2000.00, '2024-01-01', '2024-12-31'),
 (3, 3, 2000.00, '2024-01-01', '2024-12-31'),
@@ -93,17 +93,17 @@ INSERT INTO Payroll (PayrollID, EmployeeID, Salary, StartDate, EndDate) VALUES
 (5, 5, 2000.00, '2024-01-01', '2024-12-31');
 
 -- Insert sample data for Order
-INSERT INTO `Order` (OrderID, CustomerID, EmployeeID, OrderDate, DeliveryDate, Status, ProductID, Quantity) VALUES
-(1, 1, 1, '2024-10-01', '2024-10-05', 'Delivered', 1, 1),
-(2, 2, 2, '2024-10-02', '2024-10-06', 'Delivered', 2, 2),
-(3, 3, 3, '2024-10-03', '2024-10-07', 'Delivered', 3, 5),
-(4, 4, 4, '2024-10-04', '2024-10-08', 'Delivered', 4, 2),
-(5, 5, 5, '2024-10-05', '2024-10-09', 'Delivered', 5, 3);
+INSERT INTO `order` (OrderID, CustomerID, EmployeeID, OrderDate, TotalAmount, Status) VALUES
+(1, 1, 1, '2024-10-01', 1500.00, 'Completed'),
+(2, 2, 2, '2024-10-02', 40.00, 'Completed'),
+(3, 3, 3, '2024-10-03', 75.00, 'Completed'),
+(4, 4, 4, '2024-10-04', 100.00, 'Completed'),
+(5, 5, 5, '2024-10-05', 30.00, 'Completed');
 
 -- Insert sample data for Transaction
-INSERT INTO `Transaction` (TransactionID, OrderID, CustomerID, PaymentType, TotalAmount, `Date`) VALUES
-(1, 1, 1, 'Credit', 1500.00, '2024-10-01'),
-(2, 2, 2, 'Cash', 40.00, '2024-10-02'),
-(3, 3, 3, 'Debit', 75.00, '2024-10-03'),
-(4, 4, 4, 'Online', 100.00, '2024-10-04'),
-(5, 5, 5, 'Credit', 30.00, '2024-10-05'); 
+INSERT INTO transaction (TransactionID, OrderID, Amount, PaymentMethod, TransactionDate) VALUES
+(1, 1, 1500.00, 'Card', '2024-10-01'),
+(2, 2, 40.00, 'Cash', '2024-10-02'),
+(3, 3, 75.00, 'Mobile Money', '2024-10-03'),
+(4, 4, 100.00, 'Card', '2024-10-04'),
+(5, 5, 30.00, 'Cash', '2024-10-05'); 

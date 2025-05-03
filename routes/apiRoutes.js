@@ -1,19 +1,45 @@
 const express = require('express');
 const router = express.Router();
-const { query } = require('../utils/dbUtils');
-const orderRoutes = require('./orderRoutes');
+const { isAuthenticated, isAdmin } = require('../middleware/auth');
+const pool = require('../db');
+
+// Apply authentication middleware to all routes
+router.use(isAuthenticated);
+
+// Helper function to execute queries
+async function query(sql, params = []) {
+    try {
+        const [results] = await pool.query(sql, params);
+        return results;
+    } catch (error) {
+        console.error('Database query error:', error);
+        throw error;
+    }
+}
+
+// Helper to convert array of objects to CSV
+function toCSV(rows) {
+    if (!rows || !rows.length) return '';
+    const headers = Object.keys(rows[0]);
+    const csvRows = [headers.join(',')];
+    for (const row of rows) {
+        csvRows.push(headers.map(h => '"' + (row[h] !== null && row[h] !== undefined ? String(row[h]).replace(/"/g, '""') : '') + '"').join(','));
+    }
+    return csvRows.join('\n');
+}
 
 // Categories routes
-router.get('/category', async(req, res) => {
+router.get('/productcategory', async(req, res) => {
     try {
         const categories = await query('SELECT * FROM ProductCategory');
         res.json(categories);
     } catch (error) {
+        console.error('Error fetching categories:', error);
         res.status(500).json({ error: 'Error fetching categories' });
     }
 });
 
-router.post('/category', async(req, res) => {
+router.post('/productcategory', async(req, res) => {
     try {
         const { CategoryName } = req.body;
         const result = await query(
@@ -25,7 +51,7 @@ router.post('/category', async(req, res) => {
     }
 });
 
-router.put('/category/:id', async(req, res) => {
+router.put('/productcategory/:id', async(req, res) => {
     try {
         const { id } = req.params;
         const { CategoryName } = req.body;
@@ -38,7 +64,7 @@ router.put('/category/:id', async(req, res) => {
     }
 });
 
-router.delete('/category/:id', async(req, res) => {
+router.delete('/productcategory/:id', async(req, res) => {
     try {
         const { id } = req.params;
         await query('DELETE FROM ProductCategory WHERE CategoryID = ?', [id]);
@@ -48,43 +74,92 @@ router.delete('/category/:id', async(req, res) => {
     }
 });
 
+// Products routes
+router.get('/product', async(req, res) => {
+    try {
+        const products = await query(`
+            SELECT p.*, c.CategoryName, s.SupplierName 
+            FROM Product p 
+            LEFT JOIN ProductCategory c ON p.CategoryID = c.CategoryID 
+            LEFT JOIN Supplier s ON p.SupplierID = s.SupplierID
+        `);
+        res.json(products);
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ error: 'Error fetching products' });
+    }
+});
+
+router.post('/product', async(req, res) => {
+    try {
+        const { ProductName, CategoryID, Price, QuantityInStock, SupplierID } = req.body;
+        const result = await query(
+            'INSERT INTO Product (ProductName, CategoryID, Price, QuantityInStock, SupplierID) VALUES (?, ?, ?, ?, ?)', [ProductName, CategoryID, Price, QuantityInStock, SupplierID]
+        );
+        res.json({
+            ProductID: result.insertId,
+            ProductName,
+            CategoryID,
+            Price,
+            QuantityInStock,
+            SupplierID
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Error adding product' });
+    }
+});
+
+router.put('/product/:id', async(req, res) => {
+    try {
+        const { id } = req.params;
+        const { ProductName, CategoryID, Price, QuantityInStock, SupplierID } = req.body;
+        await query(
+            'UPDATE Product SET ProductName = ?, CategoryID = ?, Price = ?, QuantityInStock = ?, SupplierID = ? WHERE ProductID = ?', [ProductName, CategoryID, Price, QuantityInStock, SupplierID, id]
+        );
+        res.json({
+            ProductID: id,
+            ProductName,
+            CategoryID,
+            Price,
+            QuantityInStock,
+            SupplierID
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Error updating product' });
+    }
+});
+
+router.delete('/product/:id', async(req, res) => {
+    try {
+        const { id } = req.params;
+        await query('DELETE FROM Product WHERE ProductID = ?', [id]);
+        res.json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error deleting product' });
+    }
+});
+
 // Employees routes
 router.get('/employee', async(req, res) => {
     try {
-        console.log('Fetching employees...');
         const employees = await query(`
             SELECT e.*, b.Location as BranchName 
             FROM Employee e 
             LEFT JOIN Branch b ON e.BranchID = b.BranchID
         `);
-        console.log('Employees fetched:', employees);
         res.json(employees);
     } catch (error) {
-        console.error('Error in /employee route:', error);
-        res.status(500).json({
-            error: 'Error fetching employees',
-            details: error.message
-        });
+        console.error('Error fetching employees:', error);
+        res.status(500).json({ error: 'Error fetching employees' });
     }
 });
 
 router.post('/employee', async(req, res) => {
     try {
-        console.log('Adding employee with data:', req.body);
         const { Name, Position, PhoneNumber, BranchID } = req.body;
-
-        if (!Name || !Position || !BranchID) {
-            return res.status(400).json({
-                error: 'Missing required fields',
-                required: ['Name', 'Position', 'BranchID']
-            });
-        }
-
         const result = await query(
-            'INSERT INTO Employee (Name, Position, PhoneNumber, BranchID) VALUES (?, ?, ?, ?)', [Name, Position, PhoneNumber || null, BranchID]
+            'INSERT INTO Employee (Name, Position, PhoneNumber, BranchID) VALUES (?, ?, ?, ?)', [Name, Position, PhoneNumber, BranchID]
         );
-
-        console.log('Employee added successfully:', result);
         res.json({
             EmployeeID: result.insertId,
             Name,
@@ -93,11 +168,7 @@ router.post('/employee', async(req, res) => {
             BranchID
         });
     } catch (error) {
-        console.error('Error in POST /employee route:', error);
-        res.status(500).json({
-            error: 'Error adding employee',
-            details: error.message
-        });
+        res.status(500).json({ error: 'Error adding employee' });
     }
 });
 
@@ -108,7 +179,13 @@ router.put('/employee/:id', async(req, res) => {
         await query(
             'UPDATE Employee SET Name = ?, Position = ?, PhoneNumber = ?, BranchID = ? WHERE EmployeeID = ?', [Name, Position, PhoneNumber, BranchID, id]
         );
-        res.json({ EmployeeID: id, Name, Position, PhoneNumber, BranchID });
+        res.json({
+            EmployeeID: id,
+            Name,
+            Position,
+            PhoneNumber,
+            BranchID
+        });
     } catch (error) {
         res.status(500).json({ error: 'Error updating employee' });
     }
@@ -124,34 +201,15 @@ router.delete('/employee/:id', async(req, res) => {
     }
 });
 
-// Products routes
-router.get('/product', async(req, res) => {
-    try {
-        const products = await query(`
-            SELECT p.*, c.CategoryName, s.SupplierName 
-            FROM Product p 
-            LEFT JOIN ProductCategory c ON p.CategoryID = c.CategoryID 
-            LEFT JOIN Supplier s ON p.SupplierID = s.SupplierID
-        `);
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching products' });
-    }
-});
-
 // Transactions routes
 router.get('/transaction', async(req, res) => {
     try {
         console.log('Fetching transactions...');
         const transactions = await query(`
-            SELECT t.*, 
-                   c.Name as CustomerName,
-                   o.OrderID,
-                   p.ProductName
-            FROM \`Transaction\` t
-            LEFT JOIN Customer c ON t.CustomerID = c.CustomerID
-            LEFT JOIN \`Order\` o ON t.OrderID = o.OrderID
-            LEFT JOIN Product p ON o.ProductID = p.ProductID
+            SELECT t.*, o.OrderID, o.CustomerID, c.Name as CustomerName
+            FROM \`transaction\` t
+            LEFT JOIN \`order\` o ON t.OrderID = o.OrderID
+            LEFT JOIN customer c ON o.CustomerID = c.CustomerID
         `);
         console.log('Transactions fetched:', transactions);
         res.json(transactions);
@@ -167,9 +225,9 @@ router.get('/transaction', async(req, res) => {
 router.post('/transaction', async(req, res) => {
     try {
         console.log('Adding transaction with data:', req.body);
-        const { OrderID, CustomerID, PaymentType, TotalAmount, Date } = req.body;
+        const { OrderID, CustomerID, PaymentType, Amount, Date } = req.body;
 
-        if (!OrderID || !CustomerID || !PaymentType || !TotalAmount || !Date) {
+        if (!OrderID || !CustomerID || !PaymentType || !Amount || !Date) {
             return res.status(400).json({
                 error: 'Missing required fields',
                 required: ['OrderID', 'CustomerID', 'PaymentType', 'TotalAmount', 'Date']
@@ -177,7 +235,7 @@ router.post('/transaction', async(req, res) => {
         }
 
         const result = await query(
-            'INSERT INTO \`Transaction\` (OrderID, CustomerID, PaymentType, TotalAmount, Date) VALUES (?, ?, ?, ?, ?)', [OrderID, CustomerID, PaymentType, TotalAmount, Date]
+            'INSERT INTO \`Transaction\` (OrderID, CustomerID, PaymentType, TotalAmount, Date) VALUES (?, ?, ?, ?, ?)', [OrderID, CustomerID, PaymentType, Amount, Date]
         );
 
         console.log('Transaction added successfully:', result);
@@ -186,7 +244,7 @@ router.post('/transaction', async(req, res) => {
             OrderID,
             CustomerID,
             PaymentType,
-            TotalAmount,
+            Amount,
             Date
         });
     } catch (error) {
@@ -201,9 +259,9 @@ router.post('/transaction', async(req, res) => {
 router.put('/transaction/:id', async(req, res) => {
     try {
         const { id } = req.params;
-        const { OrderID, CustomerID, PaymentType, TotalAmount, Date } = req.body;
+        const { OrderID, CustomerID, PaymentType, Amount, Date } = req.body;
 
-        if (!OrderID || !CustomerID || !PaymentType || !TotalAmount || !Date) {
+        if (!OrderID || !CustomerID || !PaymentType || !Amount || !Date) {
             return res.status(400).json({
                 error: 'Missing required fields',
                 required: ['OrderID', 'CustomerID', 'PaymentType', 'TotalAmount', 'Date']
@@ -211,7 +269,7 @@ router.put('/transaction/:id', async(req, res) => {
         }
 
         const result = await query(
-            'UPDATE \`Transaction\` SET OrderID = ?, CustomerID = ?, PaymentType = ?, TotalAmount = ?, Date = ? WHERE TransactionID = ?', [OrderID, CustomerID, PaymentType, TotalAmount, Date, id]
+            'UPDATE \`Transaction\` SET OrderID = ?, CustomerID = ?, PaymentType = ?, TotalAmount = ?, Date = ? WHERE TransactionID = ?', [OrderID, CustomerID, PaymentType, Amount, Date, id]
         );
 
         if (result.affectedRows === 0) {
@@ -405,9 +463,10 @@ router.get('/customer', async(req, res) => {
                    c.Address,
                    c.PhoneNumber,
                    c.Email,
-                   COALESCE(SUM(t.TotalAmount), 0) as TotalSpent
-            FROM Customer c
-            LEFT JOIN \`Transaction\` t ON c.CustomerID = t.CustomerID
+                   COALESCE(SUM(t.Amount), 0) as TotalSpent
+            FROM customer c
+            LEFT JOIN \`order\` o ON c.CustomerID = o.CustomerID
+            LEFT JOIN \`transaction\` t ON o.OrderID = t.OrderID
             GROUP BY c.CustomerID, c.Name, c.LoyaltyPoints, c.Address, c.PhoneNumber, c.Email
         `);
         console.log('Customers fetched:', customers);
@@ -665,267 +724,201 @@ router.delete('/payroll/:id', async(req, res) => {
     }
 });
 
-// Use order routes
-router.use('/order', orderRoutes);
-
-// Report routes
-router.get('/reports/low-stock-products', async(req, res) => {
+// Dashboard routes
+router.get('/dashboard', async(req, res) => {
     try {
-        console.log('Fetching low stock products report...');
-        const lowStockProducts = await query(`
-            SELECT p.*, i.Quantity, 
-                   CASE 
-                       WHEN i.Quantity <= 10 THEN 'Critical'
-                       WHEN i.Quantity <= 20 THEN 'Low'
-                       ELSE 'Normal'
-                   END as StockStatus
-            FROM Product p
-            JOIN Inventory i ON p.ProductID = i.ProductID
-            WHERE i.Quantity <= 20
-            ORDER BY i.Quantity ASC
+        // Get total sales
+        const [sales] = await pool.query(`
+            SELECT SUM(Amount) as totalSales 
+            FROM transaction
         `);
-        console.log('Low stock products fetched:', lowStockProducts);
 
-        // Convert data to CSV format
-        const csvData = convertToCSV(lowStockProducts);
+        // Get total products
+        const [products] = await pool.query(`
+            SELECT COUNT(*) as totalProducts 
+            FROM \`Product\`
+        `);
 
-        // Set headers for file download
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=low-stock-products.csv');
+        // Get total transactions
+        const [transactions] = await pool.query(`
+            SELECT COUNT(*) as totalTransactions 
+            FROM transaction
+        `);
 
-        // Send the CSV file
-        res.send(csvData);
-    } catch (error) {
-        console.error('Error in /reports/low-stock-products route:', error);
-        res.status(500).json({
-            error: 'Error generating low stock products report',
-            details: error.message
+        // Get total employees
+        const [employees] = await pool.query(`
+            SELECT COUNT(*) as totalEmployees 
+            FROM \`Employee\`
+        `);
+
+        // Get sales by product category (simplified to show total sales)
+        const [categorySales] = await pool.query(`
+            SELECT 'All Categories' as CategoryName, SUM(t.Amount) as totalSales
+            FROM \`transaction\` t
+            JOIN \`order\` o ON t.OrderID = o.OrderID
+        `);
+
+        res.json({
+            totalSales: sales[0].totalSales || 0,
+            totalProducts: products[0].totalProducts || 0,
+            totalTransactions: transactions[0].totalTransactions || 0,
+            totalEmployees: employees[0].totalEmployees || 0,
+            categorySales
         });
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        res.status(500).json({ error: 'Error fetching dashboard data' });
     }
 });
 
-// Helper function to convert data to CSV format
-function convertToCSV(data) {
-    if (!data || data.length === 0) {
-        return '';
+// Orders routes
+router.get('/order', async(req, res) => {
+    try {
+        const orders = await query(`
+            SELECT o.*, c.Name as CustomerName, e.Name as EmployeeName
+            FROM \`order\` o
+            LEFT JOIN customer c ON o.CustomerID = c.CustomerID
+            LEFT JOIN employee e ON o.EmployeeID = e.EmployeeID
+        `);
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ error: 'Error fetching orders' });
     }
+});
 
-    // Get headers from the first object
-    const headers = Object.keys(data[0]);
+async function loadOrders() {
+    try {
+        const orders = await fetchEntity('order');
+        const tableBody = document.getElementById('Order-table');
+        tableBody.innerHTML = '';
 
-    // Create CSV content
-    const csvRows = [];
-
-    // Add headers
-    csvRows.push(headers.join(','));
-
-    // Add data rows
-    data.forEach(row => {
-        const values = headers.map(header => {
-            const value = row[header];
-            // Escape values that contain commas or quotes
-            if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-                return `"${value.replace(/"/g, '""')}"`;
-            }
-            return value;
+        orders.forEach(order => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${order.OrderID}</td>
+                <td>${order.CustomerName || order.CustomerID || 'N/A'}</td>
+                <td>${order.EmployeeName || order.EmployeeID || 'N/A'}</td>
+                <td>${order.OrderDate || 'N/A'}</td>
+                <td>${order.DeliveryDate || 'N/A'}</td>
+                <td>${order.Status || 'N/A'}</td>
+                <td>${order.ProductName || order.ProductID || 'N/A'}</td>
+                <td>${order.Quantity || 'N/A'}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="editOrder(${order.OrderID})">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.OrderID})">Delete</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
         });
-        csvRows.push(values.join(','));
-    });
-
-    return csvRows.join('\n');
+    } catch (error) {
+        console.error('Error loading orders:', error);
+    }
 }
 
-router.get('/reports/employees-no-payroll', async(req, res) => {
+async function loadTransactions() {
     try {
-        console.log('Fetching employees without payroll records...');
-        const employees = await query(`
-            SELECT e.EmployeeID, e.Name, e.Position, e.PhoneNumber,
-                   b.Location as BranchName
-            FROM Employee e
-            LEFT JOIN Branch b ON e.BranchID = b.BranchID
-            WHERE NOT EXISTS (
-                SELECT 1 FROM Payroll p 
-                WHERE p.EmployeeID = e.EmployeeID
-            )
-            ORDER BY e.Name ASC
-        `);
-        // console.log('Employees without payroll fetched:', employees);
+        const transactions = await fetchEntity('transaction');
+        const tableBody = document.getElementById('Transaction-table');
+        tableBody.innerHTML = '';
 
-        // Convert data to CSV format
-        const csvData = convertToCSV(employees);
-
-        // Set headers for file download
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=employees-no-payroll.csv');
-
-        // Send the CSV file
-        res.send(csvData);
-    } catch (error) {
-        // console.error('Error in /reports/employees-no-payroll route:', error);
-        res.status(500).json({
-            error: 'Error generating employees without payroll report',
-            details: error.message
+        transactions.forEach(transaction => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${transaction.TransactionID}</td>
+                <td>${transaction.OrderID || 'N/A'}</td>
+                <td>${transaction.CustomerName || transaction.CustomerID || 'N/A'}</td>
+                <td>${transaction.ProductName || transaction.ProductID || 'N/A'}</td>
+                <td>${transaction.payment_type || 'N/A'}</td>
+                <td>${transaction.transaction_date || 'N/A'}</td>
+                <td>${transaction.Amount || transaction.TotalAmount || 'N/A'}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="editTransaction(${transaction.TransactionID})">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteTransaction(${transaction.TransactionID})">Delete</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
         });
+    } catch (error) {
+        console.error('Error loading transactions:', error);
     }
-});
+}
 
-router.get('/reports/total-revenue-per-customer', async(req, res) => {
+// Reports route
+router.get('/report/:type', async(req, res) => {
+    const { type } = req.params;
     try {
-        console.log('Fetching total revenue per customer report...');
-        const revenueData = await query(`
-            SELECT c.Name as CustomerName,
-                   SUM(t.TotalAmount) as TotalRevenue,
-                   COUNT(t.TransactionID) as TransactionCount
-            FROM Customer c
-            LEFT JOIN \`Transaction\` t ON c.CustomerID = t.CustomerID
-            GROUP BY c.CustomerID, c.Name
-            ORDER BY TotalRevenue DESC
-        `);
-        // Convert data to CSV format
-        const csvData = convertToCSV(revenueData);
-
-        // Set headers for file download
+        let result;
+        switch (type) {
+            case 'total-revenue-per-customer':
+                result = await query(`
+                    SELECT c.Name as CustomerName, SUM(t.Amount) as TotalRevenue
+                    FROM customer c
+                    LEFT JOIN \`order\` o ON c.CustomerID = o.CustomerID
+                    LEFT JOIN transaction t ON o.OrderID = t.OrderID
+                    GROUP BY c.CustomerID, c.Name
+                `);
+                break;
+            case 'low-stock-products':
+                result = await query(`
+                    SELECT ProductName, QuantityInStock
+                    FROM product
+                    WHERE QuantityInStock < 10
+                `);
+                break;
+            case 'employees-with-branch-department':
+                result = await query(`
+                    SELECT e.Name as EmployeeName, b.Location as Branch, d.Name as Department
+                    FROM employee e
+                    LEFT JOIN branch b ON e.BranchID = b.BranchID
+                    LEFT JOIN department d ON d.BranchID = b.BranchID
+                `);
+                break;
+            case 'orders-with-product-details':
+                result = await query(`
+                    SELECT o.OrderID, c.Name as CustomerName, e.Name as EmployeeName, o.OrderDate, o.Status, p.ProductName, p.Price
+                    FROM \`order\` o
+                    LEFT JOIN customer c ON o.CustomerID = c.CustomerID
+                    LEFT JOIN employee e ON o.EmployeeID = e.EmployeeID
+                    LEFT JOIN product p ON p.ProductID = (SELECT ProductID FROM product LIMIT 1)
+                `);
+                break;
+            case 'total-quantity-per-category':
+                result = await query(`
+                    SELECT pc.CategoryName, SUM(p.QuantityInStock) as TotalQuantity
+                    FROM productcategory pc
+                    LEFT JOIN product p ON pc.CategoryID = p.CategoryID
+                    GROUP BY pc.CategoryID, pc.CategoryName
+                `);
+                break;
+            case 'employees-no-payroll':
+                result = await query(`
+                    SELECT e.Name as EmployeeName, e.Position
+                    FROM employee e
+                    LEFT JOIN payroll p ON e.EmployeeID = p.EmployeeID
+                    WHERE p.EmployeeID IS NULL
+                `);
+                break;
+            case 'high-spending-customers':
+                result = await query(`
+                    SELECT c.Name as CustomerName, SUM(t.Amount) as TotalSpent
+                    FROM customer c
+                    LEFT JOIN \`order\` o ON c.CustomerID = o.CustomerID
+                    LEFT JOIN transaction t ON o.OrderID = t.OrderID
+                    GROUP BY c.CustomerID, c.Name
+                    HAVING TotalSpent > 1000
+                `);
+                break;
+            default:
+                return res.status(400).json({ error: 'Unknown report type' });
+        }
+        const csv = toCSV(result);
         res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=employees-no-payroll.csv');
-
-        // Send the CSV file
-        res.send(csvData);
+        res.setHeader('Content-Disposition', `attachment; filename="${type}.csv"`);
+        res.send(csv);
     } catch (error) {
-        console.error('Error in /reports/total-revenue-per-customer route:', error);
-        res.status(500).json({
-            error: 'Error generating total revenue per customer report',
-            details: error.message
-        });
-    }
-});
-
-router.get('/reports/employees-with-branch-department', async(req, res) => {
-    try {
-        console.log('Fetching employees with branch and department details...');
-        const employees = await query(`
-            SELECT e.EmployeeID, e.Name, e.Position, e.PhoneNumber,
-                   b.Location as BranchName,
-                   d.Name as DepartmentName
-            FROM Employee e
-            LEFT JOIN Branch b ON e.BranchID = b.BranchID
-            LEFT JOIN Department d ON b.BranchID = d.BranchID
-            ORDER BY e.Name ASC
-        `);
-        // console.log('Employees with branch and department details fetched:', employees);
-        // Convert data to CSV format
-        const csvData = convertToCSV(employees);
-
-        // Set headers for file download
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=employees-no-payroll.csv');
-
-        // Send the CSV file
-        res.send(csvData);
-    } catch (error) {
-        console.error('Error in /reports/employees-with-branch-department route:', error);
-        res.status(500).json({
-            error: 'Error generating employees with branch and department report',
-            details: error.message
-        });
-    }
-});
-
-router.get('/reports/orders-with-product-details', async(req, res) => {
-    try {
-        console.log('Fetching orders with product details...');
-        const orders = await query(`
-            SELECT o.OrderID, o.OrderDate, o.DeliveryDate, o.Status,
-                   c.Name as CustomerName,
-                   e.Name as EmployeeName,
-                   p.ProductName, p.Price,
-                   o.Quantity,
-                   (p.Price * o.Quantity) as TotalAmount
-            FROM \`Order\` o
-            LEFT JOIN Customer c ON o.CustomerID = c.CustomerID
-            LEFT JOIN Employee e ON o.EmployeeID = e.EmployeeID
-            LEFT JOIN Product p ON o.ProductID = p.ProductID
-            ORDER BY o.OrderDate DESC
-        `);
-        // console.log('Orders with product details fetched:', orders);
-        // Convert data to CSV format
-        const csvData = convertToCSV(orders);
-
-        // Set headers for file download
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=employees-no-payroll.csv');
-
-        // Send the CSV file
-        res.send(csvData);
-    } catch (error) {
-        // console.error('Error in /reports/orders-with-product-details route:', error);
-        res.status(500).json({
-            error: 'Error generating orders with product details report',
-            details: error.message
-        });
-    }
-});
-
-router.get('/reports/total-quantity-per-category', async(req, res) => {
-    try {
-        console.log('Fetching total quantity per category...');
-        const categories = await query(`
-            SELECT pc.CategoryName,
-                   SUM(p.QuantityInStock) as TotalQuantity,
-                   COUNT(p.ProductID) as ProductCount
-            FROM ProductCategory pc
-            LEFT JOIN Product p ON pc.CategoryID = p.CategoryID
-            GROUP BY pc.CategoryID, pc.CategoryName
-            ORDER BY TotalQuantity DESC
-        `);
-        // console.log('Total quantity per category fetched:', categories);
-        // Convert data to CSV format
-        const csvData = convertToCSV(categories);
-
-        // Set headers for file download
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=employees-no-payroll.csv');
-
-        // Send the CSV file
-        res.send(csvData);
-    } catch (error) {
-        console.error('Error in /reports/total-quantity-per-category route:', error);
-        res.status(500).json({
-            error: 'Error generating total quantity per category report',
-            details: error.message
-        });
-    }
-});
-
-router.get('/reports/high-spending-customers', async(req, res) => {
-    try {
-        console.log('Fetching high spending customers...');
-        const customers = await query(`
-            SELECT c.CustomerID, c.Name, c.Email, c.PhoneNumber,
-                   COUNT(t.TransactionID) as TransactionCount,
-                   SUM(t.TotalAmount) as TotalSpent,
-                   MAX(t.Date) as LastPurchaseDate
-            FROM Customer c
-            LEFT JOIN \`Transaction\` t ON c.CustomerID = t.CustomerID
-            GROUP BY c.CustomerID, c.Name, c.Email, c.PhoneNumber
-            HAVING TotalSpent > 1000
-            ORDER BY TotalSpent DESC
-        `);
-        console.log('High spending customers fetched:', customers);
-        // Convert data to CSV format
-        const csvData = convertToCSV(customers);
-
-        // Set headers for file download
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=employees-no-payroll.csv');
-
-        // Send the CSV file
-        res.send(csvData);
-    } catch (error) {
-        console.error('Error in /reports/high-spending-customers route:', error);
-        res.status(500).json({
-            error: 'Error generating high spending customers report',
-            details: error.message
-        });
+        console.error('Error generating report:', error);
+        res.status(500).json({ error: 'Error generating report' });
     }
 });
 

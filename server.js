@@ -1,27 +1,44 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const apiRoutes = require('./routes/apiRoutes');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Debug middleware
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    console.log('Headers:', req.headers);
+    if (req.body) console.log('Body:', req.body);
+    next();
+});
+
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: '*', // Allow all origins for development
+    credentials: true
+}));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-// API Routes - must come before static file serving
-app.use('/api', apiRoutes);
+// Import routes
+const apiRoutes = require('./routes/apiRoutes');
+const authRoutes = require('./routes/authRoutes');
 
-// Serve static files from the root directory
-app.use(express.static(__dirname));
+// Use routes
+app.use('/api/auth', authRoutes);
+app.use('/api', apiRoutes); // This will be protected by auth middleware
 
-// Serve index.html for all other routes except /api
-app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) {
-        return next();
-    }
-    res.sendFile(path.join(__dirname, 'index.html'));
+// Debug route to check if auth routes are working
+app.get('/api/auth/test', (req, res) => {
+    console.log('Test route hit');
+    res.json({ message: 'Auth routes are working' });
+});
+
+// Serve the main page with authentication check
+app.get('/', (req, res) => {
+    res.redirect('/login.html');
 });
 
 // Error handling middleware
@@ -32,6 +49,12 @@ app.use((err, req, res, next) => {
         message: err.message,
         stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
+});
+
+// 404 handler
+app.use((req, res) => {
+    console.log('404 - Route not found:', req.method, req.url);
+    res.status(404).json({ error: 'Route not found' });
 });
 
 // Start server

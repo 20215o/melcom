@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melcom Retail System - Where Ghana Shops</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/chart.min.js"></script>
+</head>
+
+<body>
+    <!-- Add authentication status bar -->
+    <div class="auth-bar">
+        <div id="auth-status">
+            <span id="user-email"></span>
+            <button id="logout-btn" class="btn btn-secondary" style="display: none;">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="images/logo.png" alt="Melcom Logo">
+            </div>
+            <nav>
+                <a href="#" class="nav-link active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="#" class="nav-link" data-section="ProductCategory"><i class="fas fa-tags"></i> Categories</a>
+                <a href="#" class="nav-link" data-section="Supplier"><i class="fas fa-truck"></i> Suppliers</a>
+                <a href="#" class="nav-link" data-section="Customer"><i class="fas fa-users"></i> Customers</a>
+                <a href="#" class="nav-link" data-section="Branch"><i class="fas fa-store"></i> Branches</a>
+                <a href="#" class="nav-link" data-section="Product"><i class="fas fa-box"></i> Products</a>
+                <a href="#" class="nav-link" data-section="Employee"><i class="fas fa-user-tie"></i> Employees</a>
+                <a href="#" class="nav-link" data-section="Department"><i class="fas fa-building"></i> Departments</a>
+                <a href="#" class="nav-link" data-section="Inventory"><i class="fas fa-warehouse"></i> Inventory</a>
+                <a href="#" class="nav-link" data-section="Payroll"><i class="fas fa-money-check"></i> Payroll</a>
+                <a href="#" class="nav-link" data-section="Order"><i class="fas fa-shopping-cart"></i> Orders</a>
+                <a href="#" class="nav-link" data-section="Transaction"><i class="fas fa-exchange-alt"></i> Transactions</a>
+                <a href="#" class="nav-link" data-section="reports"><i class="fas fa-chart-bar"></i> Reports</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Toast Notification -->
+            <div id="toast" class="toast"></div>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section">
+                <h1>Dashboard</h1>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <h2>Total Sales</h2>
+                        <p id="total-sales">GHS 0.00</p>
+                    </div>
+                    <div class="metric-box">
+                        <h2>Total Products</h2>
+                        <p id="total-products">0</p>
+                    </div>
+                    <div class="metric-box">
+                        <h2>Total Transactions</h2>
+                        <p id="total-transactions">0</p>
+                    </div>
+                    <div class="metric-box">
+                        <h2>Total Employees</h2>
+                        <p id="total-employees">0</p>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h2>Sales per Product</h2>
+                    <canvas id="sales-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- Entity Sections -->
+            <section id="ProductCategory" class="content-section hidden">
+                <h1>Categories</h1>
+                <div class="section-header">
+                    <input type="text" id="ProductCategory-search" placeholder="Search categories...">
+                    <button class="btn btn-primary" onclick="openModal('ProductCategory-modal', 'Add Category')">Add Category</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ProductCategory-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Supplier" class="content-section hidden">
+                <h1>Suppliers</h1>
+                <div class="section-header">
+                    <input type="text" id="Supplier-search" placeholder="Search suppliers...">
+                    <button class="btn btn-primary" onclick="openModal('Supplier-modal', 'Add Supplier')">Add Supplier</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Contact Details</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Supplier-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Customer" class="content-section hidden">
+                <h1>Customers</h1>
+                <div class="section-header">
+                    <input type="text" id="Customer-search" placeholder="Search customers...">
+                    <button class="btn btn-primary" onclick="openModal('Customer-modal', 'Add Customer')">Add Customer</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Loyalty Points</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Total Spent (GHS)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Customer-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Branch" class="content-section hidden">
+                <h1>Branches</h1>
+                <div class="section-header">
+                    <input type="text" id="Branch-search" placeholder="Search branches...">
+                    <button class="btn btn-primary" onclick="openModal('Branch-modal', 'Add Branch')">Add Branch</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Location</th>
+                            <th>Manager</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Branch-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Product" class="content-section hidden">
+                <h1>Products</h1>
+                <div class="section-header">
+                    <input type="text" id="Product-search" placeholder="Search products...">
+                    <button class="btn btn-primary" onclick="openModal('Product-modal', 'Add Product')">Add Product</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price (GHS)</th>
+                            <th>Stock</th>
+                            <th>Supplier</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Product-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Employee" class="content-section hidden">
+                <h1>Employees</h1>
+                <div class="section-header">
+                    <input type="text" id="Employee-search" placeholder="Search employees...">
+                    <button class="btn btn-primary" onclick="openModal('Employee-modal', 'Add Employee')">Add Employee</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Phone</th>
+                            <th>Branch</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Employee-table">
+                        <!-- Employee data will be loaded here -->
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="Department" class="content-section hidden">
+                <h1>Departments</h1>
+                <div class="section-header">
+                    <input type="text" id="Department-search" placeholder="Search departments...">
+                    <button class="btn btn-primary" onclick="openModal('Department-modal', 'Add Department')">Add Department</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Department-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Inventory" class="content-section hidden">
+                <h1>Inventory</h1>
+                <div class="section-header">
+                    <input type="text" id="Inventory-search" placeholder="Search inventory...">
+                    <button class="btn btn-primary" onclick="openModal('Inventory-modal', 'Add Inventory')">Add Inventory</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Inventory-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Payroll" class="content-section hidden">
+                <h1>Payroll</h1>
+                <div class="section-header">
+                    <input type="text" id="Payroll-search" placeholder="Search payroll...">
+                    <button class="btn btn-primary" onclick="openModal('Payroll-modal', 'Add Payroll')">Add Payroll</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Salary (GHS)</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Payroll-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Order" class="content-section hidden">
+                <h1>Orders</h1>
+                <div class="section-header">
+                    <input type="text" id="Order-search" placeholder="Search orders...">
+                    <button class="btn btn-primary" onclick="openModal('Order-modal', 'Add Order')">Add Order</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Employee</th>
+                            <th>Order Date</th>
+                            <th>Delivery Date</th>
+                            <th>Status</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Order-table"></tbody>
+                </table>
+            </section>
+
+            <section id="Transaction" class="content-section hidden">
+                <h1>Transactions</h1>
+                <div class="section-header">
+                    <input type="text" id="Transaction-search" placeholder="Search transactions...">
+                    <button class="btn btn-primary" onclick="openModal('Transaction-modal', 'Add Transaction')">Add Transaction</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Order</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Payment Type</th>
+                            <th>Amount (GHS)</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Transaction-table"></tbody>
+                </table>
+            </section>
+
+            <!-- Modals for Each Entity -->
+            <div id="ProductCategory-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="ProductCategory-modal-title">Add Category</h2>
+                    <div id="ProductCategory-form">
+                        <input type="hidden" id="ProductCategory-id">
+                        <div class="form-group">
+                            <label for="ProductCategory-name">Category Name</label>
+                            <input type="text" id="ProductCategory-name" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('ProductCategory-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('ProductCategory')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Supplier-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Supplier-modal-title">Add Supplier</h2>
+                    <div id="Supplier-form">
+                        <input type="hidden" id="Supplier-id">
+                        <div class="form-group">
+                            <label for="Supplier-name">Supplier Name</label>
+                            <input type="text" id="Supplier-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Supplier-contact">Contact Details</label>
+                            <input type="text" id="Supplier-contact">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Supplier-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('Supplier')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Customer-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Customer-modal-title">Add Customer</h2>
+                    <form id="Customer-form">
+                        <input type="hidden" id="Customer-id">
+                        <div class="form-group">
+                            <label for="Customer-name">Name</label>
+                            <input type="text" id="Customer-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Customer-phone">Phone</label>
+                            <input type="text" id="Customer-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="Customer-email">Email</label>
+                            <input type="email" id="Customer-email">
+                        </div>
+                        <div class="form-group">
+                            <label for="Customer-address">Address</label>
+                            <input type="text" id="Customer-address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Customer-loyalty">Loyalty Points</label>
+                            <input type="number" id="Customer-loyalty" value="0" min="0">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Customer-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="Branch-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Branch-modal-title">Add Branch</h2>
+                    <div id="Branch-form">
+                        <input type="hidden" id="Branch-id">
+                        <div class="form-group">
+                            <label for="Branch-location">Location</label>
+                            <input type="text" id="Branch-location" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Branch-manager">Manager</label>
+                            <select id="Branch-manager"></select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Branch-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('Branch')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Product-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Product-modal-title">Add Product</h2>
+                    <div id="Product-form">
+                        <input type="hidden" id="Product-id">
+                        <div class="form-group">
+                            <label for="Product-name">Product Name</label>
+                            <input type="text" id="Product-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Product-category">Category</label>
+                            <select id="Product-category" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Product-price">Price (GHS)</label>
+                            <input type="number" step="0.01" id="Product-price" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="Product-stock">Quantity in Stock</label>
+                            <input type="number" id="Product-stock" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="Product-supplier">Supplier</label>
+                            <select id="Product-supplier" required></select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Product-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('Product')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Employee-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Employee-modal-title">Add Employee</h2>
+                    <div id="Employee-form">
+                        <input type="hidden" id="Employee-id">
+                        <div class="form-group">
+                            <label for="Employee-name">Name</label>
+                            <input type="text" id="Employee-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Employee-position">Position</label>
+                            <input type="text" id="Employee-position" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Employee-phone">Phone Number</label>
+                            <input type="text" id="Employee-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="Employee-branch">Branch</label>
+                            <select id="Employee-branch">
+                                <option value="">Select Branch</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Employee-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEmployee()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Department-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Department-modal-title">Add Department</h2>
+                    <form id="Department-form">
+                        <input type="hidden" id="Department-id">
+                        <div class="form-group">
+                            <label for="Department-name">Name</label>
+                            <input type="text" id="Department-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Department-description">Description</label>
+                            <textarea id="Department-description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="Department-branch">Branch</label>
+                            <select id="Department-branch" required>
+                                <option value="">Select Branch</option>
+                            </select>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Department-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="Inventory-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Inventory-modal-title">Add Inventory</h2>
+                    <form id="Inventory-form">
+                        <input type="hidden" id="Inventory-id">
+                        <div class="form-group">
+                            <label for="Inventory-product">Product</label>
+                            <select id="Inventory-product" required>
+                                <option value="">Select Product</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Inventory-quantity">Quantity</label>
+                            <input type="number" id="Inventory-quantity" required min="0">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Inventory-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="Payroll-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Payroll-modal-title">Add Payroll</h2>
+                    <div id="Payroll-form">
+                        <input type="hidden" id="Payroll-id">
+                        <div class="form-group">
+                            <label for="Payroll-employee">Employee</label>
+                            <select id="Payroll-employee" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Payroll-salary">Salary (GHS)</label>
+                            <input type="number" step="0.01" id="Payroll-salary" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="Payroll-startDate">Start Date</label>
+                            <input type="date" id="Payroll-startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Payroll-endDate">End Date</label>
+                            <input type="date" id="Payroll-endDate">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Payroll-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEntity('Payroll')">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Order-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Order-modal-title">Add Order</h2>
+                    <div id="Order-form">
+                        <input type="hidden" id="Order-id">
+                        <div class="form-group">
+                            <label for="Order-customer">Customer</label>
+                            <select id="Order-customer"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-employee">Employee</label>
+                            <select id="Order-employee"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-orderDate">Order Date</label>
+                            <input type="date" id="Order-orderDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-deliveryDate">Delivery Date</label>
+                            <input type="date" id="Order-deliveryDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-status">Status</label>
+                            <select id="Order-status" required>
+                                <option value="Pending">Pending</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-product">Product</label>
+                            <select id="Order-product" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Order-quantity">Quantity</label>
+                            <input type="number" id="Order-quantity" required min="1">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Order-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveOrder()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Transaction-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2 id="Transaction-modal-title">Add Transaction</h2>
+                    <div id="Transaction-form">
+                        <input type="hidden" id="Transaction-id">
+                        <div class="form-group">
+                            <label for="Transaction-order">Order</label>
+                            <select id="Transaction-order" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Transaction-customer">Customer</label>
+                            <select id="Transaction-customer" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Transaction-paymentType">Payment Type</label>
+                            <select id="Transaction-paymentType" required>
+                                <option value="Cash">Cash</option>
+                                <option value="Credit">Credit</option>
+                                <option value="Debit">Debit</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="Transaction-totalAmount">Total Amount (GHS)</label>
+                            <input type="number" step="0.01" id="Transaction-totalAmount" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="Transaction-date">Date</label>
+                            <input type="date" id="Transaction-date" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('Transaction-modal')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveTransaction()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section hidden">
+                <h1>Reports</h1>
+                <div class="section-header">
+                    <select id="report-type">
+                        <option value="total-revenue-per-customer">Total Revenue per Customer</option>
+                        <option value="low-stock-products">Products with Low Stock</option>
+                        <option value="employees-with-branch-department">Employees with Branch and Department</option>
+                        <option value="orders-with-product-details">Orders with Product Details</option>
+                        <option value="total-quantity-per-category">Total Quantity Ordered per Category</option>
+                        <option value="employees-no-payroll">Employees with No Payroll</option>
+                        <option value="high-spending-customers">High-Spending Customers</option>
+                    </select>
+                    <button id="generate-report-btn" class="btn btn-primary">Generate Report</button>
+                </div>
+                <table id="report-table" class="data-table hidden">
+                    <thead id="report-table-head"></thead>
+                    <tbody id="report-table-body"></tbody>
+                </table>
+                <div id="report-chart-container" class="chart-box hidden">
+                    <canvas id="report-chart"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Authentication constants
+        const API_BASE_URL = 'http://localhost:3000/api';
+        const AUTH_TOKEN_KEY = 'auth_token';
+        const USER_EMAIL_KEY = 'user_email';
+
+        // Check authentication status
+        async function checkAuth() {
+            const token = localStorage.getItem(AUTH_TOKEN_KEY);
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Authentication failed');
+                }
+
+                const userEmail = localStorage.getItem(USER_EMAIL_KEY);
+                document.getElementById('user-email').textContent = userEmail;
+                document.getElementById('logout-btn').style.display = 'block';
+            } catch (error) {
+                localStorage.removeItem(AUTH_TOKEN_KEY);
+                localStorage.removeItem(USER_EMAIL_KEY);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(USER_EMAIL_KEY);
+            window.location.href = '/login.html';
+        }
+
+        // Generic function to fetch entities
+        async function fetchEntity(entityType) {
+            try {
+                const token = localStorage.getItem(AUTH_TOKEN_KEY);
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/${entityType.toLowerCase()}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem(AUTH_TOKEN_KEY);
+                    localStorage.removeItem(USER_EMAIL_KEY);
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching ${entityType}:`, error);
+                throw error;
+            }
+        }
+
+        // Check if user is admin
+        function isAdminUser() {
+            const userEmail = localStorage.getItem('user_email');
+            return userEmail === 'admin@gmail.com';
+        }
+
+        // Load categories data
+        async function loadCategories() {
+            try {
+                const categories = await fetchEntity('productcategory');
+                const tableBody = document.getElementById('ProductCategory-table');
+                tableBody.innerHTML = '';
+
+                categories.forEach(category => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                        <td>${category.CategoryID}</td>
+                        <td>${category.CategoryName}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editCategory(${category.CategoryID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteCategory(${category.CategoryID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Load products data
+        async function loadProducts() {
+            try {
+                const products = await fetchEntity('product');
+                const tableBody = document.getElementById('Product-table');
+                tableBody.innerHTML = '';
+
+                products.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.ProductID}</td>
+                        <td>${product.ProductName}</td>
+                        <td>${product.CategoryName || 'N/A'}</td>
+                        <td>${product.Price}</td>
+                        <td>${product.QuantityInStock}</td>
+                        <td>${product.SupplierName || 'N/A'}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editProduct(${product.ProductID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.ProductID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Load employees data
+        async function loadEmployees() {
+            try {
+                const employees = await fetchEntity('employee');
+                const tableBody = document.getElementById('Employee-table');
+                tableBody.innerHTML = '';
+
+                employees.forEach(employee => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${employee.EmployeeID}</td>
+                        <td>${employee.Name}</td>
+                        <td>${employee.Position}</td>
+                        <td>${employee.PhoneNumber || 'N/A'}</td>
+                        <td>${employee.BranchName || 'N/A'}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editEmployee(${employee.EmployeeID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${employee.EmployeeID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading employees:', error);
+            }
+        }
+
+        // Load suppliers data
+        async function loadSuppliers() {
+            try {
+                const suppliers = await fetchEntity('supplier');
+                const tableBody = document.getElementById('Supplier-table');
+                tableBody.innerHTML = '';
+
+                suppliers.forEach(supplier => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${supplier.SupplierID}</td>
+                        <td>${supplier.SupplierName}</td>
+                        <td>${supplier.ContactDetails || 'N/A'}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editSupplier(${supplier.SupplierID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteSupplier(${supplier.SupplierID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading suppliers:', error);
+            }
+        }
+
+        // Load customers data
+        async function loadCustomers() {
+            try {
+                const customers = await fetchEntity('customer');
+                const tableBody = document.getElementById('Customer-table');
+                tableBody.innerHTML = '';
+
+                customers.forEach(customer => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${customer.CustomerID}</td>
+                        <td>${customer.Name}</td>
+                        <td>${customer.LoyaltyPoints}</td>
+                        <td>${customer.Address}</td>
+                        <td>${customer.PhoneNumber || 'N/A'}</td>
+                        <td>${customer.Email || 'N/A'}</td>
+                        <td>${customer.TotalSpent || 0}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editCustomer(${customer.CustomerID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteCustomer(${customer.CustomerID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading customers:', error);
+            }
+        }
+
+        // Load branches data
+        async function loadBranches() {
+            try {
+                const branches = await fetchEntity('branch');
+                const tableBody = document.getElementById('Branch-table');
+                tableBody.innerHTML = '';
+
+                branches.forEach(branch => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${branch.BranchID}</td>
+                        <td>${branch.Location}</td>
+                        <td>${branch.ManagerName || 'N/A'}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editBranch(${branch.BranchID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteBranch(${branch.BranchID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading branches:', error);
+            }
+        }
+
+        // Load departments data
+        async function loadDepartments() {
+            try {
+                const departments = await fetchEntity('department');
+                const tableBody = document.getElementById('Department-table');
+                tableBody.innerHTML = '';
+
+                departments.forEach(department => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${department.DepartmentID}</td>
+                        <td>${department.Name}</td>
+                        <td>${department.Description || 'N/A'}</td>
+                        <td>${department.BranchName || department.BranchID || 'N/A'}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editDepartment(${department.DepartmentID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteDepartment(${department.DepartmentID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading departments:', error);
+            }
+        }
+
+        // Load inventory data
+        async function loadInventory() {
+            try {
+                const inventory = await fetchEntity('inventory');
+                const tableBody = document.getElementById('Inventory-table');
+                tableBody.innerHTML = '';
+
+                inventory.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.InventoryID}</td>
+                        <td>${item.ProductName || item.ProductID || 'N/A'}</td>
+                        <td>${item.Quantity}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editInventory(${item.InventoryID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteInventory(${item.InventoryID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading inventory:', error);
+            }
+        }
+
+        // Load orders data
+        async function loadOrders() {
+            try {
+                const orders = await fetchEntity('order');
+                const tableBody = document.getElementById('Order-table');
+                tableBody.innerHTML = '';
+
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${order.OrderID}</td>
+                        <td>${order.CustomerName || order.CustomerID || 'N/A'}</td>
+                        <td>${order.EmployeeName || order.EmployeeID || 'N/A'}</td>
+                        <td>${order.OrderDate || 'N/A'}</td>
+                        <td>${order.DeliveryDate || 'N/A'}</td>
+                        <td>${order.Status || 'N/A'}</td>
+                        <td>${order.ProductName || order.ProductID || 'N/A'}</td>
+                        <td>${order.Quantity || 'N/A'}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editOrder(${order.OrderID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteOrder(${order.OrderID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
+        }
+
+        // Load transactions data
+        async function loadTransactions() {
+            try {
+                const transactions = await fetchEntity('transaction');
+                const tableBody = document.getElementById('Transaction-table');
+                tableBody.innerHTML = '';
+
+                transactions.forEach(transaction => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transaction.TransactionID}</td>
+                        <td>${transaction.OrderID || 'N/A'}</td>
+                        <td>${transaction.CustomerName || transaction.CustomerID || 'N/A'}</td>
+                        <td>N/A</td>
+                        <td>${transaction.PaymentMethod || 'N/A'}</td>
+                        <td>${transaction.Amount || 'N/A'}</td>
+                        <td>${transaction.TransactionDate || 'N/A'}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editTransaction(${transaction.TransactionID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteTransaction(${transaction.TransactionID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+            }
+        }
+
+        // Load payroll data
+        async function loadPayroll() {
+            try {
+                const payrolls = await fetchEntity('payroll');
+                const tableBody = document.getElementById('Payroll-table');
+                tableBody.innerHTML = '';
+
+                payrolls.forEach(payroll => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${payroll.PayrollID}</td>
+                        <td>${payroll.EmployeeName || payroll.EmployeeID || 'N/A'}</td>
+                        <td>${payroll.Salary}</td>
+                        <td>${payroll.StartDate || 'N/A'}</td>
+                        <td>${payroll.EndDate || 'N/A'}</td>
+                        <td>
+                            ${isAdminUser() ? `
+                            <button class="btn btn-sm btn-primary" onclick="editPayroll(${payroll.PayrollID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deletePayroll(${payroll.PayrollID})">Delete</button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading payroll records:', error);
+            }
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const token = localStorage.getItem(AUTH_TOKEN_KEY);
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Fetch dashboard data
+                const response = await fetch(`${API_BASE_URL}/dashboard`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load dashboard data');
+                }
+
+                const data = await response.json();
+
+                // Update metrics
+                document.getElementById('total-sales').textContent = `GHS ${Number(data.totalSales).toFixed(2)}`;
+                document.getElementById('total-products').textContent = Number(data.totalProducts);
+                document.getElementById('total-transactions').textContent = Number(data.totalTransactions);
+                document.getElementById('total-employees').textContent = Number(data.totalEmployees);
+
+                // Update sales chart
+                const ctx = document.getElementById('sales-chart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.categorySales.map(item => item.CategoryName),
+                        datasets: [{
+                            label: 'Sales per Category',
+                            data: data.categorySales.map(item => item.totalSales),
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Set up navigation event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication
+            checkAuth();
+
+            // Set up logout button
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
+            // Set up navigation links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = link.getAttribute('data-section');
+
+                    // Hide all sections
+                    document.querySelectorAll('.content-section').forEach(section => {
+                        section.classList.add('hidden');
+                    });
+
+                    // Show selected section
+                    document.getElementById(sectionId).classList.remove('hidden');
+
+                    // Load section data
+                    switch (sectionId) {
+                        case 'dashboard':
+                            loadDashboard();
+                            break;
+                        case 'ProductCategory':
+                            loadCategories();
+                            break;
+                        case 'Supplier':
+                            loadSuppliers();
+                            break;
+                        case 'Customer':
+                            loadCustomers();
+                            break;
+                        case 'Branch':
+                            loadBranches();
+                            break;
+                        case 'Department':
+                            loadDepartments();
+                            break;
+                        case 'Inventory':
+                            loadInventory();
+                            break;
+                        case 'Order':
+                            loadOrders();
+                            break;
+                        case 'Transaction':
+                            loadTransactions();
+                            break;
+                        case 'Payroll':
+                            loadPayroll();
+                            break;
+                        case 'Product':
+                            loadProducts();
+                            break;
+                        case 'Employee':
+                            loadEmployees();
+                            break;
+                    }
+                });
+            });
+
+            // Load dashboard by default
+            loadDashboard();
+
+            // Example for Add button (repeat for all entities):
+            if (!isAdminUser()) {
+                document.querySelectorAll('.btn.btn-primary').forEach(btn => {
+                    if (btn.textContent.includes('Add')) {
+                        btn.style.display = 'none';
+                    }
+                });
+            }
+
+            // Enhanced openModal for Customer entity (edit/add)
+            function openModal(modalId, title, id, entityType) {
+                const modal = document.getElementById(modalId);
+                if (!modal) {
+                    alert('Modal not found: ' + modalId);
+                    return;
+                }
+                // Set the modal title if an element exists
+                const titleElem = modal.querySelector('h2, .modal-title, [id$="-modal-title"]');
+                if (titleElem && title) {
+                    titleElem.textContent = title;
+                }
+                // Optionally set the ID in a hidden input if present
+                const idInput = modal.querySelector('input[type="hidden"]');
+                if (idInput) {
+                    idInput.value = id || '';
+                }
+                // Special handling for Customer entity
+                if (entityType === 'Customer') {
+                    if (id) {
+                        // Editing: populate form fields with customer data
+                        const customer = window._customerCache && window._customerCache.find(c => c.CustomerID == id);
+                        if (customer) {
+                            document.getElementById('Customer-name').value = customer.Name || '';
+                            document.getElementById('Customer-loyalty').value = customer.LoyaltyPoints || 0;
+                            document.getElementById('Customer-address').value = customer.Address || '';
+                            document.getElementById('Customer-phone').value = customer.PhoneNumber || '';
+                            document.getElementById('Customer-email').value = customer.Email || '';
+                        }
+                    } else {
+                        // Adding: clear form fields
+                        document.getElementById('Customer-name').value = '';
+                        document.getElementById('Customer-loyalty').value = 0;
+                        document.getElementById('Customer-address').value = '';
+                        document.getElementById('Customer-phone').value = '';
+                        document.getElementById('Customer-email').value = '';
+                    }
+                }
+                modal.classList.remove('hidden');
+            }
+            window.openModal = openModal;
+
+            // Patch editCustomer to use enhanced openModal
+            window.editCustomer = function(id) {
+                openModal('Customer-modal', 'Edit Customer', id, 'Customer');
+            };
+            // Patch add customer button to clear form
+            document.addEventListener('DOMContentLoaded', () => {
+                // ... existing code ...
+                const addCustomerBtn = document.querySelector("button[onclick^='openModal('][onclick*='Add Customer']");
+                if (addCustomerBtn) {
+                    addCustomerBtn.onclick = function() {
+                        openModal('Customer-modal', 'Add Customer', '', 'Customer');
+                    };
+                }
+                // ... existing code ...
+            });
+        });
+
+        // Make entity action functions global for button functionality
+        window.editCategory = function(id) {
+            openModal('ProductCategory-modal', 'Edit Category', id);
+        };
+        window.deleteCategory = async function(id) {
+            if (!confirm('Are you sure you want to delete this category?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/productcategory/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete category');
+                await loadCategories();
+            } catch (error) {
+                alert('Error deleting category: ' + error.message);
+            }
+        };
+        window.editProduct = function(id) {
+            openModal('Product-modal', 'Edit Product', id);
+        };
+        window.deleteProduct = async function(id) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/product/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete product');
+                await loadProducts();
+            } catch (error) {
+                alert('Error deleting product: ' + error.message);
+            }
+        };
+        window.editEmployee = function(id) {
+            openModal('Employee-modal', 'Edit Employee', id);
+        };
+        window.deleteEmployee = async function(id) {
+            if (!confirm('Are you sure you want to delete this employee?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/employee/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete employee');
+                await loadEmployees();
+            } catch (error) {
+                alert('Error deleting employee: ' + error.message);
+            }
+        };
+        window.editSupplier = function(id) {
+            openModal('Supplier-modal', 'Edit Supplier', id);
+        };
+        window.deleteSupplier = async function(id) {
+            if (!confirm('Are you sure you want to delete this supplier?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/supplier/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete supplier');
+                await loadSuppliers();
+            } catch (error) {
+                alert('Error deleting supplier: ' + error.message);
+            }
+        };
+        window.editBranch = function(id) {
+            openModal('Branch-modal', 'Edit Branch', id);
+        };
+        window.deleteBranch = async function(id) {
+            if (!confirm('Are you sure you want to delete this branch?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/branch/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete branch');
+                await loadBranches();
+            } catch (error) {
+                alert('Error deleting branch: ' + error.message);
+            }
+        };
+        window.editDepartment = function(id) {
+            openModal('Department-modal', 'Edit Department', id);
+        };
+        window.deleteDepartment = async function(id) {
+            if (!confirm('Are you sure you want to delete this department?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/department/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete department');
+                await loadDepartments();
+            } catch (error) {
+                alert('Error deleting department: ' + error.message);
+            }
+        };
+        window.editInventory = function(id) {
+            openModal('Inventory-modal', 'Edit Inventory', id);
+        };
+        window.deleteInventory = async function(id) {
+            if (!confirm('Are you sure you want to delete this inventory record?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/inventory/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete inventory record');
+                await loadInventory();
+            } catch (error) {
+                alert('Error deleting inventory: ' + error.message);
+            }
+        };
+        window.editOrder = function(id) {
+            openModal('Order-modal', 'Edit Order', id);
+        };
+        window.deleteOrder = async function(id) {
+            if (!confirm('Are you sure you want to delete this order?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/order/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete order');
+                await loadOrders();
+            } catch (error) {
+                alert('Error deleting order: ' + error.message);
+            }
+        };
+        window.editTransaction = function(id) {
+            openModal('Transaction-modal', 'Edit Transaction', id);
+        };
+        window.deleteTransaction = async function(id) {
+            if (!confirm('Are you sure you want to delete this transaction?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/transaction/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete transaction');
+                await loadTransactions();
+            } catch (error) {
+                alert('Error deleting transaction: ' + error.message);
+            }
+        };
+        window.editPayroll = function(id) {
+            openModal('Payroll-modal', 'Edit Payroll', id);
+        };
+        window.deletePayroll = async function(id) {
+            if (!confirm('Are you sure you want to delete this payroll record?')) return;
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/payroll/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to delete payroll record');
+                await loadPayroll();
+            } catch (error) {
+                alert('Error deleting payroll: ' + error.message);
+            }
+        };
+
+        // Global closeModal function
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+        window.closeModal = closeModal;
+
+        // Actual saveEntity implementation for all entities
+        window.saveEntity = async function(entityType) {
+            const token = localStorage.getItem('auth_token');
+            try {
+                if (entityType === 'ProductCategory') {
+                    const id = document.getElementById('ProductCategory-id').value;
+                    const name = document.getElementById('ProductCategory-name').value;
+                    const modalId = 'ProductCategory-modal';
+                    if (!name) {
+                        alert('Category name is required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/productcategory/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ CategoryName: name })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/productcategory`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ CategoryName: name })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save category');
+                    closeModal(modalId);
+                    await loadCategories();
+                } else if (entityType === 'Product') {
+                    const id = document.getElementById('Product-id').value;
+                    const name = document.getElementById('Product-name').value;
+                    const categoryId = document.getElementById('Product-category').value;
+                    const price = document.getElementById('Product-price').value;
+                    const quantity = document.getElementById('Product-stock').value;
+                    const supplierId = document.getElementById('Product-supplier').value;
+                    const modalId = 'Product-modal';
+                    if (!name || !categoryId || !price || !quantity || !supplierId) {
+                        alert('All fields are required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/product/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ ProductName: name, CategoryID: categoryId, Price: price, QuantityInStock: quantity, SupplierID: supplierId })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/product`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ ProductName: name, CategoryID: categoryId, Price: price, QuantityInStock: quantity, SupplierID: supplierId })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save product');
+                    closeModal(modalId);
+                    await loadProducts();
+                } else if (entityType === 'Employee') {
+                    const id = document.getElementById('Employee-id').value;
+                    const name = document.getElementById('Employee-name').value;
+                    const position = document.getElementById('Employee-position').value;
+                    const phone = document.getElementById('Employee-phone').value;
+                    const branchId = document.getElementById('Employee-branch').value;
+                    const modalId = 'Employee-modal';
+                    if (!name || !position || !branchId) {
+                        alert('Name, Position, and Branch are required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/employee/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ Name: name, Position: position, PhoneNumber: phone, BranchID: branchId })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/employee`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ Name: name, Position: position, PhoneNumber: phone, BranchID: branchId })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save employee');
+                    closeModal(modalId);
+                    await loadEmployees();
+                } else if (entityType === 'Supplier') {
+                    const id = document.getElementById('Supplier-id').value;
+                    const name = document.getElementById('Supplier-name').value;
+                    const contact = document.getElementById('Supplier-contact').value;
+                    const modalId = 'Supplier-modal';
+                    if (!name) {
+                        alert('Supplier name is required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/supplier/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ SupplierName: name, ContactDetails: contact })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/supplier`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ SupplierName: name, ContactDetails: contact })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save supplier');
+                    closeModal(modalId);
+                    await loadSuppliers();
+                } else if (entityType === 'Customer') {
+                    const id = document.getElementById('Customer-id').value;
+                    const name = document.getElementById('Customer-name').value;
+                    const loyalty = document.getElementById('Customer-loyalty').value;
+                    const address = document.getElementById('Customer-address').value;
+                    const phone = document.getElementById('Customer-phone').value;
+                    const email = document.getElementById('Customer-email').value;
+                    const modalId = 'Customer-modal';
+                    if (!name || !address) {
+                        alert('Name and Address are required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/customer/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ Name: name, LoyaltyPoints: loyalty, Address: address, PhoneNumber: phone, Email: email })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/customer`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ Name: name, LoyaltyPoints: loyalty, Address: address, PhoneNumber: phone, Email: email })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save customer');
+                    closeModal(modalId);
+                    await loadCustomers();
+                } else if (entityType === 'Branch') {
+                    const id = document.getElementById('Branch-id').value;
+                    const location = document.getElementById('Branch-location').value;
+                    const managerId = document.getElementById('Branch-manager').value;
+                    const modalId = 'Branch-modal';
+                    if (!location) {
+                        alert('Location is required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/branch/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ Location: location, ManagerID: managerId })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/branch`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ Location: location, ManagerID: managerId })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save branch');
+                    closeModal(modalId);
+                    await loadBranches();
+                } else if (entityType === 'Department') {
+                    const id = document.getElementById('Department-id').value;
+                    const name = document.getElementById('Department-name').value;
+                    const description = document.getElementById('Department-description').value;
+                    const branchId = document.getElementById('Department-branch').value;
+                    const modalId = 'Department-modal';
+                    if (!name || !branchId) {
+                        alert('Name and Branch are required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/department/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ Name: name, Description: description, BranchID: branchId })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/department`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ Name: name, Description: description, BranchID: branchId })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save department');
+                    closeModal(modalId);
+                    await loadDepartments();
+                } else if (entityType === 'Inventory') {
+                    const id = document.getElementById('Inventory-id').value;
+                    const productId = document.getElementById('Inventory-product').value;
+                    const quantity = document.getElementById('Inventory-quantity').value;
+                    const modalId = 'Inventory-modal';
+                    if (!productId || !quantity) {
+                        alert('Product and Quantity are required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/inventory/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ ProductID: productId, Quantity: quantity })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/inventory`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ ProductID: productId, Quantity: quantity })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save inventory');
+                    closeModal(modalId);
+                    await loadInventory();
+                } else if (entityType === 'Payroll') {
+                    const id = document.getElementById('Payroll-id').value;
+                    const employeeId = document.getElementById('Payroll-employee').value;
+                    const salary = document.getElementById('Payroll-salary').value;
+                    const startDate = document.getElementById('Payroll-startDate').value;
+                    const endDate = document.getElementById('Payroll-endDate').value;
+                    const modalId = 'Payroll-modal';
+                    if (!employeeId || !salary || !startDate) {
+                        alert('Employee, Salary, and Start Date are required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/payroll/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ EmployeeID: employeeId, Salary: salary, StartDate: startDate, EndDate: endDate })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/payroll`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ EmployeeID: employeeId, Salary: salary, StartDate: startDate, EndDate: endDate })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save payroll');
+                    closeModal(modalId);
+                    await loadPayroll();
+                } else if (entityType === 'Order') {
+                    const id = document.getElementById('Order-id').value;
+                    const customerId = document.getElementById('Order-customer').value;
+                    const employeeId = document.getElementById('Order-employee').value;
+                    const orderDate = document.getElementById('Order-orderDate').value;
+                    const deliveryDate = document.getElementById('Order-deliveryDate').value;
+                    const status = document.getElementById('Order-status').value;
+                    const productId = document.getElementById('Order-product').value;
+                    const quantity = document.getElementById('Order-quantity').value;
+                    const modalId = 'Order-modal';
+                    if (!customerId || !employeeId || !orderDate || !status || !productId || !quantity) {
+                        alert('All fields are required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/order/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ CustomerID: customerId, EmployeeID: employeeId, OrderDate: orderDate, DeliveryDate: deliveryDate, Status: status, ProductID: productId, Quantity: quantity })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/order`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ CustomerID: customerId, EmployeeID: employeeId, OrderDate: orderDate, DeliveryDate: deliveryDate, Status: status, ProductID: productId, Quantity: quantity })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save order');
+                    closeModal(modalId);
+                    await loadOrders();
+                } else if (entityType === 'Transaction') {
+                    const id = document.getElementById('Transaction-id').value;
+                    const orderId = document.getElementById('Transaction-order').value;
+                    const customerId = document.getElementById('Transaction-customer').value;
+                    const paymentType = document.getElementById('Transaction-paymentType').value;
+                    const amount = document.getElementById('Transaction-totalAmount').value;
+                    const date = document.getElementById('Transaction-date').value;
+                    const modalId = 'Transaction-modal';
+                    if (!orderId || !customerId || !paymentType || !amount || !date) {
+                        alert('All fields are required');
+                        return;
+                    }
+                    let response;
+                    if (id) {
+                        response = await fetch(`${API_BASE_URL}/transaction/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ OrderID: orderId, CustomerID: customerId, PaymentType: paymentType, Amount: amount, Date: date })
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/transaction`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ OrderID: orderId, CustomerID: customerId, PaymentType: paymentType, Amount: amount, Date: date })
+                        });
+                    }
+                    if (!response.ok) throw new Error('Failed to save transaction');
+                    closeModal(modalId);
+                    await loadTransactions();
+                } else {
+                    alert('Save logic not implemented for ' + entityType);
+                }
+            } catch (error) {
+                alert('Error saving ' + entityType + ': ' + error.message);
+            }
+        };
+
+        // Download report as CSV
+        async function downloadReport(reportType) {
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/report/${reportType}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) throw new Error('Failed to generate report');
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${reportType}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Error downloading report: ' + error.message);
+            }
+        }
+        window.downloadReport = downloadReport;
+
+        // Add download buttons to the reports section
+        document.addEventListener('DOMContentLoaded', () => {
+            // ... existing code ...
+            // Attach event to Generate Report button
+            const generateReportBtn = document.getElementById('generate-report-btn');
+            if (generateReportBtn) {
+                generateReportBtn.onclick = function() {
+                    const reportType = document.getElementById('report-type').value;
+                    downloadReport(reportType);
+                };
+            }
+            // ... existing code ...
+        });
+    </script>
+</body>
+
+</html>
