@@ -5,6 +5,14 @@ This project is a full-stack solution designed to manage retail operations for M
 
 ---
 
+## Changelog
+
+### 2024-06-09
+- Updated all frontend API base URLs from `http://localhost:3000/api` to `https://melcom-retail-system.onrender.com/api` to support deployment on Render.com.
+- Ensured all authentication and entity management features now communicate with the deployed backend.
+
+---
+
 ## Project Structure Overview
 
 ```
@@ -120,6 +128,43 @@ The server will run at `http://localhost:3000` by default.
 - **Inventory Management**: Monitor and update stock levels.
 - **Payroll System**: Manage employee salaries and contract dates.
 - **Dashboard Metrics**: Visual reporting using Chart.js (Total Sales, Products, Transactions, Employees).
+
+---
+
+## Authentication
+
+The system uses token-based authentication (JWT) for secure access to all protected API endpoints. Users must log in with their email and password to receive a token, which is stored in the browser's local storage. This token is sent with every API request to verify the user's identity. If the token is missing or invalid, the user is redirected to the login page.
+
+- **Login:** Users authenticate via the login form. On success, a JWT token is issued and stored locally.
+- **Session Management:** The app checks for a valid token on every page load and API call. If the token is expired or invalid, the user is logged out automatically.
+- **Logout:** Users can log out, which clears the token and user info from local storage.
+
+## Admin vs. Normal User
+
+The application supports two user roles:
+
+- **Admin User:** Identified by the email `admin@gmail.com`. Admins have full access to all features, including the ability to add, edit, and delete any entity (products, categories, employees, etc.). Admin-only actions (like delete/edit buttons) are only visible to admins.
+- **Normal User:** Any user other than the admin. Normal users have read-only access to most data and cannot perform administrative actions. The UI dynamically hides admin-only controls for these users.
+
+Role switching is handled by logging in with the appropriate credentials. The UI and available actions update automatically based on the logged-in user's role.
+
+## Responsive Design
+
+The frontend is built with responsive design principles, ensuring usability across desktops, tablets, and mobile devices. The layout adapts to different screen sizes, with navigation, tables, and modals optimized for touch and smaller displays. CSS media queries and flexible grid layouts are used throughout the application for a seamless user experience on any device.
+
+## Change of Host to Aiven
+
+The backend database hosting has been migrated from ScaleGrid to **Aiven** for improved reliability and scalability. Please update your `.env` file and connection settings as follows:
+
+```
+DB_HOST=your-aiven-database-host
+DB_USER=your-database-username
+DB_PASSWORD=your-database-password
+DB_NAME=Melcom
+```
+
+- Ensure your SSL certificate and connection pool settings are compatible with Aiven's requirements.
+- Update any deployment scripts or documentation to reference the new Aiven host.
 
 ---
 
