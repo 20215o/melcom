@@ -1,5 +1,5 @@
 // Base URL for API endpoints
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://melcom-retail-system.onrender.com/api';
 
 // Generic function to fetch entities
 async function fetchEntity(entityType) {
